@@ -1,0 +1,179 @@
+import { RESORTS, DIFFICULTY } from './resorts.js';
+import { formatTime, clamp } from './util.js';
+
+const BEST_KEY = (id) => `alpine-rush.best.${id}`;
+
+export function loadBest(id) {
+  try {
+    const raw = localStorage.getItem(BEST_KEY(id));
+    return raw ? JSON.parse(raw) : null;
+  } catch { return null; }
+}
+
+export function saveBest(id, record) {
+  try {
+    const prev = loadBest(id);
+    if (!prev || record.score > prev.score) {
+      localStorage.setItem(BEST_KEY(id), JSON.stringify(record));
+      return true;
+    }
+  } catch { /* storage unavailable */ }
+  return false;
+}
+
+export function medalFor(resort, timeSec, gatesHit, gatesTotal, crashes) {
+  const par = resort.run.parSec;
+  const gateRate = gatesTotal ? gatesHit / gatesTotal : 1;
+  if (timeSec <= par && gateRate >= 0.8 && crashes === 0) return { key: 'gold', label: '金牌', icon: '🥇' };
+  if (timeSec <= par * 1.16 && gateRate >= 0.6) return { key: 'silver', label: '银牌', icon: '🥈' };
+  if (timeSec <= par * 1.4) return { key: 'bronze', label: '铜牌', icon: '🥉' };
+  return { key: 'finish', label: '完赛', icon: '🎿' };
+}
+
+export class UI {
+  constructor() {
+    this.el = (id) => document.getElementById(id);
+    this.screens = {
+      title: this.el('screen-title'),
+      brief: this.el('screen-brief'),
+      results: this.el('screen-results'),
+      pause: this.el('screen-pause'),
+    };
+    this.hud = this.el('hud');
+    this.deck = this.el('deck');
+    this.toastEl = this.el('toast');
+    this.selected = null;
+    this.onPick = null;
+    this.onStart = null;
+    this._toastTimer = null;
+    this.fillResorts();
+  }
+
+  fillResorts() {
+    const grid = this.el('resort-grid');
+    grid.innerHTML = '';
+    for (const r of RESORTS) {
+      const d = DIFFICULTY[r.difficulty];
+      const best = loadBest(r.id);
+      const card = document.createElement('button');
+      card.className = 'resort-card';
+      card.dataset.id = r.id;
+      card.innerHTML = `
+        <span class="rc-diff" style="--diff:${d.color}">${d.mark} ${d.label}</span>
+        <span class="rc-name">${r.name}</span>
+        <span class="rc-cn">${r.cn} · ${r.cn_region}</span>
+        <span class="rc-run">${r.run.name}</span>
+        <span class="rc-stats">
+          <b>${(r.run.lengthM / 1000).toFixed(1)}</b>km 赛道
+          <i>·</i><b>${Math.round(r.terrain.pitch * 100)}</b>% 坡度
+          <i>·</i>目标<b>${r.run.parSec}</b>s
+        </span>
+        <span class="rc-tags">${r.tags.map((t) => `<em>${t}</em>`).join('')}</span>
+        <span class="rc-best">${best ? `个人最佳 ${best.score.toLocaleString()} · ${formatTime(best.time)}` : '尚未挑战'}</span>
+      `;
+      card.addEventListener('click', () => this.pick(r.id));
+      grid.appendChild(card);
+    }
+  }
+
+  pick(id) {
+    this.selected = id;
+    for (const c of document.querySelectorAll('.resort-card')) {
+      c.classList.toggle('is-selected', c.dataset.id === id);
+    }
+    this.onPick?.(id);
+  }
+
+  showBrief(resort) {
+    const d = DIFFICULTY[resort.difficulty];
+    const best = loadBest(resort.id);
+    this.el('brief-body').innerHTML = `
+      <div class="brief-head">
+        <span class="rc-diff" style="--diff:${d.color}">${d.mark} ${d.label}</span>
+        <h2>${resort.name}<small>${resort.cn}</small></h2>
+        <p class="brief-region">${resort.region} · ${resort.cn_region}</p>
+      </div>
+      <p class="brief-blurb">${resort.blurb}</p>
+      <div class="brief-run">
+        <span><small>本条雪道</small><b>${resort.run.name}</b></span>
+        <span><small>赛道长度</small><b>${resort.run.lengthM} m</b></span>
+        <span><small>目标时间</small><b>${resort.run.parSec} s</b></span>
+      </div>
+      <div class="brief-facts">
+        <span><small>参考落差</small><b>≈ ${resort.facts.verticalRefM} m</b></span>
+        <span><small>参考顶部海拔</small><b>≈ ${resort.facts.summitRefM} m</b></span>
+        <span><small>备注</small><b>${resort.facts.note}</b></span>
+      </div>
+      <p class="brief-note">参考数据为公开资料的近似值，仅用于氛围呈现，非官方数据。场景为原创低多边形建模，未使用任何 Ikon Pass 或雪场的图片与标识。</p>
+      ${best ? `<p class="brief-best">个人最佳：<b>${best.score.toLocaleString()}</b> 分 · ${formatTime(best.time)} · ${best.medal}</p>` : ''}
+    `;
+    this.setScreen('brief');
+  }
+
+  setScreen(name) {
+    for (const [key, el] of Object.entries(this.screens)) {
+      if (!el) continue;
+      el.classList.toggle('is-open', key === name);
+    }
+    const inRun = name === 'run';
+    this.hud.classList.toggle('is-on', inRun || name === 'pause');
+    this.deck.classList.toggle('is-on', inRun);
+    document.body.dataset.screen = name;
+  }
+
+  updateHud(s) {
+    this.el('hud-speed').textContent = Math.round(s.speedKmh);
+    this.el('hud-vert').textContent = Math.round(s.vertical);
+    this.el('hud-time').textContent = formatTime(s.time);
+    this.el('hud-score').textContent = Math.floor(s.score).toLocaleString();
+    this.el('hud-combo').textContent = `x${s.combo.toFixed(s.combo % 1 ? 1 : 0)}`;
+    this.el('hud-combo').classList.toggle('is-hot', s.combo >= 3);
+    this.el('hud-gates').textContent = `${s.gatesHit}/${s.gatesSeen}`;
+    this.el('hud-progress-fill').style.width = `${clamp(s.progress, 0, 1) * 100}%`;
+    this.el('hud-progress-label').textContent = `${Math.round(clamp(s.progress, 0, 1) * 100)}%`;
+    const air = this.el('hud-air');
+    air.classList.toggle('is-on', s.airborne);
+    air.textContent = s.airborne ? `AIR ${s.airTime.toFixed(1)}s` : 'AIR';
+    this.el('hud-terrain').textContent = s.offPiste > 0.45 ? '深雪区' : '压雪道';
+    this.el('hud-terrain').classList.toggle('is-powder', s.offPiste > 0.45);
+  }
+
+  toast(text, kind = '') {
+    const el = this.toastEl;
+    el.textContent = text;
+    el.className = `toast is-on ${kind}`;
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => { el.className = 'toast'; }, 1500);
+  }
+
+  showResults(resort, r) {
+    const isNewBest = saveBest(resort.id, { score: Math.floor(r.score), time: r.time, medal: r.medal.label });
+    const best = loadBest(resort.id);
+    this.el('results-body').innerHTML = `
+      <div class="res-medal ${r.medal.key}">${r.medal.icon}</div>
+      <h2>${r.medal.label}${isNewBest ? ' · 新纪录' : ''}</h2>
+      <p class="res-run">${resort.name} · ${resort.run.name}</p>
+      <div class="res-grid">
+        <span><small>总分</small><b>${Math.floor(r.score).toLocaleString()}</b></span>
+        <span><small>用时</small><b>${formatTime(r.time)}</b></span>
+        <span><small>目标</small><b>${resort.run.parSec}s</b></span>
+        <span><small>旗门</small><b>${r.gatesHit}/${r.gatesSeen}</b></span>
+        <span><small>最高速度</small><b>${Math.round(r.topSpeed * 3.6)} km/h</b></span>
+        <span><small>累计落差</small><b>${Math.round(r.vertical)} m</b></span>
+        <span><small>滞空</small><b>${r.airTimeTotal.toFixed(1)}s</b></span>
+        <span><small>最长滞空</small><b>${r.bigAir.toFixed(1)}s</b></span>
+        <span><small>转体</small><b>${r.spins}</b></span>
+        <span><small>摔倒</small><b>${r.crashes}</b></span>
+      </div>
+      ${best ? `<p class="res-best">个人最佳 ${best.score.toLocaleString()} 分 · ${formatTime(best.time)}</p>` : ''}
+    `;
+    this.setScreen('results');
+  }
+
+  showError(err) {
+    const el = this.el('error');
+    el.textContent = String(err?.stack || err);
+    el.classList.add('is-on');
+    console.error(err);
+  }
+}

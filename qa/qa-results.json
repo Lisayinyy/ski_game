@@ -1,0 +1,341 @@
+{
+  "checks": [
+    {
+      "name": "boot: __SKI_READY__",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "webgl context",
+      "pass": true,
+      "detail": "WebGL 2.0 (OpenGL ES 3.0 Chromium)"
+    },
+    {
+      "name": "title: 6 resort cards",
+      "pass": true,
+      "detail": "6 cards"
+    },
+    {
+      "name": "resort deer-valley: geometry + gates + kickers",
+      "pass": true,
+      "detail": "{\"meshes\": 233, \"points\": 2, \"triangles\": 131377, \"gates\": 29, \"kickers\": 2}"
+    },
+    {
+      "name": "resort deer-valley: button-only autopilot stays on the piste",
+      "pass": true,
+      "detail": "x -12.3 vs centre -10.5, offPiste 0.00"
+    },
+    {
+      "name": "resort deer-valley: terrain normals point at the sky",
+      "pass": true,
+      "detail": "mean normal.y = 0.97"
+    },
+    {
+      "name": "resort deer-valley: massif backdrop built",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resort deer-valley: vista sorts after the sky, before the terrain",
+      "pass": true,
+      "detail": "{\"normalUp\": 0.9671238877155163, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 9, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort deer-valley: snow reads as lit snow, not grey concrete",
+      "pass": true,
+      "detail": "luma 201, 197, 198, 205, 196"
+    },
+    {
+      "name": "resort deer-valley: no sky gap under the piste",
+      "pass": true,
+      "detail": "lower-frame luma 201, 197, 198"
+    },
+    {
+      "name": "resort aspen-snowmass: geometry + gates + kickers",
+      "pass": true,
+      "detail": "{\"meshes\": 219, \"points\": 2, \"triangles\": 136097, \"gates\": 29, \"kickers\": 5}"
+    },
+    {
+      "name": "resort aspen-snowmass: button-only autopilot stays on the piste",
+      "pass": true,
+      "detail": "x -26.4 vs centre -19.9, offPiste 0.00"
+    },
+    {
+      "name": "resort aspen-snowmass: terrain normals point at the sky",
+      "pass": true,
+      "detail": "mean normal.y = 0.95"
+    },
+    {
+      "name": "resort aspen-snowmass: massif backdrop built",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resort aspen-snowmass: vista sorts after the sky, before the terrain",
+      "pass": true,
+      "detail": "{\"normalUp\": 0.9488781256145901, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 10, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort aspen-snowmass: snow reads as lit snow, not grey concrete",
+      "pass": true,
+      "detail": "luma 197, 199, 206, 197, 129"
+    },
+    {
+      "name": "resort aspen-snowmass: no sky gap under the piste",
+      "pass": true,
+      "detail": "lower-frame luma 197, 199, 206"
+    },
+    {
+      "name": "resort niseko: geometry + gates + kickers",
+      "pass": true,
+      "detail": "{\"meshes\": 249, \"points\": 2, \"triangles\": 146027, \"gates\": 29, \"kickers\": 4}"
+    },
+    {
+      "name": "resort niseko: button-only autopilot stays on the piste",
+      "pass": true,
+      "detail": "x -23.0 vs centre -18.6, offPiste 0.00"
+    },
+    {
+      "name": "resort niseko: terrain normals point at the sky",
+      "pass": true,
+      "detail": "mean normal.y = 0.96"
+    },
+    {
+      "name": "resort niseko: massif backdrop built",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resort niseko: vista sorts after the sky, before the terrain",
+      "pass": true,
+      "detail": "{\"normalUp\": 0.9598249933160381, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort niseko: snow reads as lit snow, not grey concrete",
+      "pass": true,
+      "detail": "luma 193, 193, 196, 197, 220"
+    },
+    {
+      "name": "resort niseko: no sky gap under the piste",
+      "pass": true,
+      "detail": "lower-frame luma 193, 193, 196"
+    },
+    {
+      "name": "resort palisades-tahoe: geometry + gates + kickers",
+      "pass": true,
+      "detail": "{\"meshes\": 197, \"points\": 2, \"triangles\": 122551, \"gates\": 29, \"kickers\": 5}"
+    },
+    {
+      "name": "resort palisades-tahoe: button-only autopilot stays on the piste",
+      "pass": true,
+      "detail": "x -35.5 vs centre -28.3, offPiste 0.00"
+    },
+    {
+      "name": "resort palisades-tahoe: terrain normals point at the sky",
+      "pass": true,
+      "detail": "mean normal.y = 0.91"
+    },
+    {
+      "name": "resort palisades-tahoe: massif backdrop built",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resort palisades-tahoe: vista sorts after the sky, before the terrain",
+      "pass": true,
+      "detail": "{\"normalUp\": 0.912619591554006, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 12, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort palisades-tahoe: snow reads as lit snow, not grey concrete",
+      "pass": true,
+      "detail": "luma 207, 209, 210, 185, 206"
+    },
+    {
+      "name": "resort palisades-tahoe: no sky gap under the piste",
+      "pass": true,
+      "detail": "lower-frame luma 207, 209, 210"
+    },
+    {
+      "name": "resort big-sky: geometry + gates + kickers",
+      "pass": true,
+      "detail": "{\"meshes\": 202, \"points\": 2, \"triangles\": 118019, \"gates\": 32, \"kickers\": 6}"
+    },
+    {
+      "name": "resort big-sky: button-only autopilot stays on the piste",
+      "pass": true,
+      "detail": "x -32.3 vs centre -26.2, offPiste 0.00"
+    },
+    {
+      "name": "resort big-sky: terrain normals point at the sky",
+      "pass": true,
+      "detail": "mean normal.y = 0.92"
+    },
+    {
+      "name": "resort big-sky: massif backdrop built",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resort big-sky: vista sorts after the sky, before the terrain",
+      "pass": true,
+      "detail": "{\"normalUp\": 0.9237663503929421, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort big-sky: snow reads as lit snow, not grey concrete",
+      "pass": true,
+      "detail": "luma 193, 197, 200, 146, 205"
+    },
+    {
+      "name": "resort big-sky: no sky gap under the piste",
+      "pass": true,
+      "detail": "lower-frame luma 193, 197, 200"
+    },
+    {
+      "name": "resort zermatt: geometry + gates + kickers",
+      "pass": true,
+      "detail": "{\"meshes\": 184, \"points\": 2, \"triangles\": 104487, \"gates\": 32, \"kickers\": 3}"
+    },
+    {
+      "name": "resort zermatt: button-only autopilot stays on the piste",
+      "pass": true,
+      "detail": "x -38.8 vs centre -35.6, offPiste 0.00"
+    },
+    {
+      "name": "resort zermatt: terrain normals point at the sky",
+      "pass": true,
+      "detail": "mean normal.y = 0.89"
+    },
+    {
+      "name": "resort zermatt: massif backdrop built",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resort zermatt: vista sorts after the sky, before the terrain",
+      "pass": true,
+      "detail": "{\"normalUp\": 0.8911594234278173, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort zermatt: snow reads as lit snow, not grey concrete",
+      "pass": true,
+      "detail": "luma 205, 207, 209, 202, 203"
+    },
+    {
+      "name": "resort zermatt: no sky gap under the piste",
+      "pass": true,
+      "detail": "lower-frame luma 205, 207, 209"
+    },
+    {
+      "name": "run starts via START button",
+      "pass": true,
+      "detail": "run"
+    },
+    {
+      "name": "skier accelerates down the fall line",
+      "pass": true,
+      "detail": "speed 4.5->14.4 m/s, descended 13.6 m"
+    },
+    {
+      "name": "btn-left press sets active state",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "BUTTON 左转 steers left",
+      "pass": true,
+      "detail": "heading 0.00->-0.95, x 9.5->-4.8"
+    },
+    {
+      "name": "BUTTON 右转 steers right",
+      "pass": true,
+      "detail": "heading -0.95->0.95"
+    },
+    {
+      "name": "carving across the fall line costs speed (real ski behaviour)",
+      "pass": true,
+      "detail": "straight 17.1 m/s vs carving 10.6 m/s at heading -0.95 rad"
+    },
+    {
+      "name": "BUTTON 犁式刹车 slows on a black run",
+      "pass": true,
+      "detail": "10.1 -> 0.0 m/s"
+    },
+    {
+      "name": "BUTTON 收腿加速 gains speed",
+      "pass": true,
+      "detail": "0.9 -> 3.2 m/s"
+    },
+    {
+      "name": "BUTTON 起跳 leaves the ground",
+      "pass": true,
+      "detail": "airborne=True"
+    },
+    {
+      "name": "skier lands again",
+      "pass": true,
+      "detail": "airborne=False"
+    },
+    {
+      "name": "gate lookup works",
+      "pass": true,
+      "detail": "{\"x\": -16.375653902160774, \"z\": -322.77039542607963, \"half\": 3.6}"
+    },
+    {
+      "name": "passing between the poles scores a gate",
+      "pass": true,
+      "detail": "hit 3 -> 4, score 2038, combo 2.5999999999999996"
+    },
+    {
+      "name": "crossing the finish shows the results card",
+      "pass": true,
+      "detail": "results"
+    },
+    {
+      "name": "results card rendered",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "medal + stats populated",
+      "pass": true,
+      "detail": "10 stat cells"
+    },
+    {
+      "name": "再滑一次 restarts a fresh run",
+      "pass": true,
+      "detail": "mode=run t=0.0"
+    },
+    {
+      "name": "pause button reachable and works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "resume works",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile 390x844: no horizontal overflow",
+      "pass": true,
+      "detail": "overflow=0px"
+    },
+    {
+      "name": "mobile: turn buttons visible",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "mobile: pause not covered by the deck",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "no console/page errors",
+      "pass": true,
+      "detail": ""
+    }
+  ],
+  "ok": true,
+  "summary": "67/67 passed"
+}
