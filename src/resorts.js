@@ -70,16 +70,18 @@ export const RESORTS = [
     },
     physics: { drag: 0.0044, carve: 1.5, maxSpeed: 31, grip: 1.0, deepDrag: 3.0, brake: 0.8 },
     palette: {
-      skyTop: [0.09, 0.24, 0.54], skyMid: [0.38, 0.62, 0.88], skyLow: [1.0, 0.85, 0.66],
-      sunDir: [0.55, 0.24, 0.80], sunTint: [1.0, 0.68, 0.32], sunSharp: 15,
+      // Late-afternoon Colorado gold: warm low sky feeding a cool zenith. Low sun (y≈0.16)
+      // rakes across the snow so trees and moguls throw long amber shadows.
+      skyTop: [0.10, 0.22, 0.48], skyMid: [0.52, 0.60, 0.82], skyLow: [1.0, 0.72, 0.42],
+      sunDir: [0.60, 0.16, 0.78], sunTint: [1.0, 0.62, 0.28], sunSharp: 13,
       // Warm afternoon light on *white* snow. The old warm snow + warm fog combination
       // tinted the whole mountain sand-beige and read as a desert.
-      fog: 0xdcdfe4, fogNear: 100, fogFar: 1000,
+      fog: 0xe6d9cc, fogNear: 110, fogFar: 1050,
       snowLo: [0.95, 0.955, 0.97], snowHi: [1.0, 1.0, 1.0], offPiste: [0.86, 0.87, 0.93],
       rock: 0x8b7a6c, tree: 0x2f5138, treeSnow: 0xfff4e2, corduroy: 0.03,
       // Ambient stays *cool* — snow in shade is lit by blue sky, and the warmth belongs to
       // the directional sun only. A warm hemisphere light turned the whole run beige.
-      hemiSky: 0xd7e6ff, hemiGround: 0x55503f, hemiInt: 2.1, sunInt: 3.4, exposure: 1.10,
+      hemiSky: 0xd9e4ff, hemiGround: 0x5a4c3a, hemiInt: 1.9, sunInt: 3.6, exposure: 1.12,
     },
     flora: { kind: 'aspen', density: 1.0, lineGap: 5, scale: [0.9, 1.5] },
     props: { lift: 'gondola', hut: true, snowgun: false, bamboo: false, serac: false, village: false },
@@ -160,10 +162,10 @@ export const RESORTS = [
     cn_region: '美国 蒙大拿州',
     difficulty: 'black',
     seed: 5503,
-    blurb: 'Lone Peak 那个金字塔就在正前方。空气干冷，雪是冷烟一样的，树线以上几乎只有你和风。',
+    blurb: 'Lone Peak 那个金字塔就在正前方。日落把树线以上的雪染成粉金色，空气干冷，只有你和风。',
     facts: { verticalRefM: 1326, summitRefM: 3403, note: 'Lone Peak Tram · 大落差' },
     trails: ['Liberty Bowl', 'Marx', 'Lenin', 'Big Rock Tongue'],
-    tags: ['树线以上', '冷烟雪', '大落差', 'Lone Peak'],
+    tags: ['树线以上', '日落粉金', '大落差', 'Lone Peak'],
     run: { name: 'Liberty Bowl · Lone Peak', lengthM: 2800, parSec: 96 },
     terrain: {
       pitch: 0.335, pisteHalf: 24, wallSteep: 1.2, rollAmp: 5.2,
@@ -173,12 +175,17 @@ export const RESORTS = [
     },
     physics: { drag: 0.0036, carve: 1.48, maxSpeed: 38, grip: 1.0, deepDrag: 3.0, brake: 0.75 },
     palette: {
-      skyTop: [0.04, 0.14, 0.42], skyMid: [0.22, 0.48, 0.82], skyLow: [0.72, 0.86, 0.98],
-      sunDir: [0.35, 0.28, 0.89], sunTint: [1.0, 0.88, 0.70], sunSharp: 30,
-      fog: 0xbcd6f2, fogNear: 130, fogFar: 1150,
-      snowLo: [0.92, 0.96, 1.0], snowHi: [1.0, 1.0, 1.0], offPiste: [0.82, 0.90, 1.0],
-      rock: 0x77808f, tree: 0x1a3b34, treeSnow: 0xf7fcff, corduroy: 0.02,
-      hemiSky: 0xc6e4ff, hemiGround: 0x2a4056, hemiInt: 2.0, sunInt: 3.3, exposure: 1.06,
+      // Alpenglow at last light: a hot pink-orange horizon climbing into deep dusk blue.
+      // The sun sits right on the horizon (y≈0.10) so Lone Peak and every bump throws a
+      // long rose-gold shadow across the bowl.
+      skyTop: [0.06, 0.10, 0.34], skyMid: [0.46, 0.42, 0.66], skyLow: [1.0, 0.55, 0.46],
+      sunDir: [0.40, 0.10, 0.86], sunTint: [1.0, 0.55, 0.40], sunSharp: 22,
+      fog: 0xd9bfc6, fogNear: 130, fogFar: 1150,
+      // snow at dusk picks up the warm sky low and cool shade high — keep the base bright
+      // so it still reads as snow, the warmth comes from the directional sun.
+      snowLo: [0.94, 0.93, 0.96], snowHi: [1.0, 0.99, 0.98], offPiste: [0.82, 0.86, 0.96],
+      rock: 0x6b6270, tree: 0x24303f, treeSnow: 0xffe9e0, corduroy: 0.02,
+      hemiSky: 0xcabfe0, hemiGround: 0x3a3550, hemiInt: 1.9, sunInt: 3.5, exposure: 1.08,
     },
     flora: { kind: 'sparse', density: 0.4, lineGap: 9, scale: [0.7, 1.2] },
     props: { lift: 'tram', hut: false, snowgun: false, bamboo: false, serac: false, village: false },

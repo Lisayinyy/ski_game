@@ -109,6 +109,14 @@ export class Game {
     this.teardownWorld();
     this.resort = resort;
     this.scene.fog = new THREE.Fog(resort.palette.fog, resort.palette.fogNear, resort.palette.fogFar);
+    // Fallback clear colour = the sky's mid tone. The sky dome normally covers the frame, but
+    // at a low sun angle with a high FOV the very top of the dome can fall behind the far plane
+    // for a sliver; without a background that sliver reads as a hard black triangle. Painting
+    // the clear colour with the sky mid keeps any gap indistinguishable from the sky.
+    {
+      const t = resort.palette.skyTop;
+      this.scene.background = new THREE.Color(t[0], t[1], t[2]);
+    }
     this.renderer.toneMappingExposure = resort.palette.exposure;
 
     this.terrain = new Terrain(this.scene, resort);
@@ -266,6 +274,7 @@ export class Game {
         if (e.type === 'kicker') this.ui.toast('起跳！');
       } else if (e.type === 'land') {
         this.audio.land(e.impact);
+        this.burstLanding(e.impact);
         if (e.airTime > 0.45) {
           this.addScore(Math.round(e.airTime * 120), `滞空 ${e.airTime.toFixed(1)}s`);
           this.bumpCombo(0.3);
@@ -319,24 +328,46 @@ export class Game {
 
   emitSpray(dt, input) {
     const p = this.physics;
-    if (p.airborne || p.speed < 2.5) return;
+    if (p.airborne || p.speed < 2.0) return;
     const edge = Math.abs(p.edge);
-    const intensity = edge * 0.85 + p.offPiste * 1.25 + (input.brake ? 0.9 : 0);
-    const count = Math.min(9, Math.floor(intensity * p.speed * dt * 2.6));
+    // A carve on any surface throws snow; deep powder and braking throw far more.
+    const intensity = edge * 1.35 + p.offPiste * 1.8 + (input.brake ? 1.3 : 0);
+    if (intensity < 0.08) return;
+    const count = Math.min(22, Math.floor((0.6 + intensity) * p.speed * dt * 5.0));
     if (count <= 0) return;
     const dirX = Math.sin(p.heading);
     const dirZ = -Math.cos(p.heading);
+    // faster + harder carve => bigger, higher plume
+    const power = clamp(intensity * (0.7 + p.speed * 0.06), 0.15, 3.4);
     for (let i = 0; i < count; i++) {
       const side = i % 2;
       this.skier.skiTailWorld(side, this.tmp);
       const back = 0.35 + Math.random() * 0.6;
       this.spray.emit(
         this.tmp.x, this.tmp.y + 0.05, this.tmp.z,
-        -dirX * p.speed * back + Math.sign(p.edge || 1) * edge * 3.2,
-        1.4 + p.speed * 0.06 + p.offPiste * 2.2,
+        -dirX * p.speed * back + Math.sign(p.edge || 1) * edge * 4.0,
+        1.9 + p.speed * 0.09 + p.offPiste * 3.0 + power * 0.8,
         -dirZ * p.speed * back,
-        0.35 + Math.random() * 0.45,
-        0.9 + p.offPiste * 1.4
+        0.45 + Math.random() * 0.55,
+        0.8 + p.offPiste * 1.8,
+        0.6 + power * 0.6           // particle base size grows with carve power
+      );
+    }
+  }
+
+  /** One-shot ring of powder kicked up when the skier touches down from a jump. */
+  burstLanding(impact) {
+    const p = this.physics;
+    const puff = clamp(impact * 0.9 + 0.4, 0.5, 2.6);
+    const n = Math.round(18 + puff * 16);
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const r = 1.4 + Math.random() * 2.2;
+      this.spray.emit(
+        p.x + Math.cos(a) * 0.5, p.y + 0.1, p.z + Math.sin(a) * 0.5,
+        Math.cos(a) * r, 2.4 + puff * 1.6 + Math.random() * 2.0, Math.sin(a) * r,
+        0.55 + Math.random() * 0.5, 1.4,
+        0.75 + puff * 0.5
       );
     }
   }

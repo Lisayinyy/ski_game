@@ -287,6 +287,7 @@ export class World {
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
         depthWrite: false,
+        fog: false,
         uniforms: this.skyUniforms,
         vertexShader: `varying vec3 vP; void main(){ vP = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
         fragmentShader: `

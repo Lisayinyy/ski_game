@@ -83,28 +83,59 @@ export class Snowfall {
 
 /* ---------------------------------------------------------------- spray */
 
-/** Snow thrown up by the edges — the visual payoff of a hard carve or a powder turn. */
+/**
+ * Snow thrown up by the edges — the visual payoff of a hard carve or a powder turn.
+ *
+ * Each particle now carries its own size and fades both in and out over its life, so a
+ * hard carve reads as a soft billowing cloud of powder rather than a fixed spray of dots.
+ * On ~0.95-albedo sunlit snow AdditiveBlending washes the plume out to nothing, so we use
+ * NormalBlending and let a per-particle alpha attribute carry the puff-and-settle look.
+ */
 export class Spray {
-  constructor(scene, max = 1400) {
+  constructor(scene, max = 2600) {
     this.max = max;
     this.pos = new Float32Array(max * 3);
     this.vel = new Float32Array(max * 3);
     this.life = new Float32Array(max);
+    this.maxLife = new Float32Array(max);
     this.size = new Float32Array(max);
+    this.alpha = new Float32Array(max);
     this.head = 0;
     const geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.BufferAttribute(this.pos, 3));
-    this.points = new THREE.Points(geo, new THREE.PointsMaterial({
-      map: softDot(), color: 0xf2fbff, size: 0.34,
-      transparent: true, opacity: 0.9, depthWrite: false,
-      sizeAttenuation: true, blending: THREE.AdditiveBlending,
-    }));
+    geo.setAttribute('aSize', new THREE.BufferAttribute(this.size, 1));
+    geo.setAttribute('aAlpha', new THREE.BufferAttribute(this.alpha, 1));
+    // Per-particle size + alpha via a tiny ShaderMaterial. NormalBlending keeps the plume
+    // opaque and readable against bright snow; the soft dot texture rounds every particle.
+    const mat = new THREE.ShaderMaterial({
+      uniforms: { uTex: { value: softDot() }, uPix: { value: (innerHeight || 900) * 0.5 } },
+      transparent: true, depthWrite: false, blending: THREE.NormalBlending,
+      vertexShader: `
+        attribute float aSize; attribute float aAlpha;
+        varying float vA;
+        uniform float uPix;
+        void main(){
+          vA = aAlpha;
+          vec4 mv = modelViewMatrix * vec4(position, 1.0);
+          gl_Position = projectionMatrix * mv;
+          gl_PointSize = aSize * uPix / max(1.0, -mv.z);
+        }`,
+      fragmentShader: `
+        uniform sampler2D uTex; varying float vA;
+        void main(){
+          vec4 t = texture2D(uTex, gl_PointCoord);
+          // slightly cool-white powder
+          gl_FragColor = vec4(vec3(0.96, 0.98, 1.0), t.a * vA);
+        }`,
+    });
+    this.points = new THREE.Points(geo, mat);
     this.points.frustumCulled = false;
+    this.points.renderOrder = 2;
     scene.add(this.points);
     for (let i = 0; i < max; i++) this.pos[i * 3 + 1] = -9999;
   }
 
-  emit(x, y, z, vx, vy, vz, life, spread) {
+  emit(x, y, z, vx, vy, vz, life, spread, size = 0.6) {
     const i = this.head;
     this.head = (this.head + 1) % this.max;
     this.pos[i * 3] = x; this.pos[i * 3 + 1] = y; this.pos[i * 3 + 2] = z;
@@ -112,6 +143,9 @@ export class Spray {
     this.vel[i * 3 + 1] = vy + Math.random() * spread * 0.7;
     this.vel[i * 3 + 2] = vz + (Math.random() - 0.5) * spread;
     this.life[i] = life;
+    this.maxLife[i] = life;
+    this.size[i] = size * (0.7 + Math.random() * 0.7);
+    this.alpha[i] = 0;
   }
 
   update(dt) {
@@ -119,18 +153,29 @@ export class Spray {
       if (this.life[i] <= 0) continue;
       this.life[i] -= dt;
       const j = i * 3;
-      this.vel[j + 1] -= 7.5 * dt;
+      // gentle gravity + air drag so the cloud puffs out then settles
+      this.vel[j] *= (1 - 1.6 * dt);
+      this.vel[j + 2] *= (1 - 1.6 * dt);
+      this.vel[j + 1] -= 5.2 * dt;
       this.pos[j] += this.vel[j] * dt;
       this.pos[j + 1] += this.vel[j + 1] * dt;
       this.pos[j + 2] += this.vel[j + 2] * dt;
-      if (this.life[i] <= 0) this.pos[j + 1] = -9999;
+      // life-normalised: fade in fast, expand, then fade out
+      const t = 1 - this.life[i] / this.maxLife[i];       // 0..1 over lifetime
+      this.alpha[i] = Math.min(1, t * 6) * (1 - t * t) * 0.95; // quick puff, slow settle
+      this.size[i] += dt * 1.9;                            // billow outward
+      if (this.life[i] <= 0) { this.pos[j + 1] = -9999; this.alpha[i] = 0; }
     }
-    this.points.geometry.attributes.position.needsUpdate = true;
+    const a = this.points.geometry.attributes;
+    a.position.needsUpdate = true;
+    a.aSize.needsUpdate = true;
+    a.aAlpha.needsUpdate = true;
   }
 
   clear() {
-    for (let i = 0; i < this.max; i++) { this.life[i] = 0; this.pos[i * 3 + 1] = -9999; }
-    this.points.geometry.attributes.position.needsUpdate = true;
+    for (let i = 0; i < this.max; i++) { this.life[i] = 0; this.pos[i * 3 + 1] = -9999; this.alpha[i] = 0; }
+    const a = this.points.geometry.attributes;
+    a.position.needsUpdate = true; a.aAlpha.needsUpdate = true;
   }
 
   dispose() {
