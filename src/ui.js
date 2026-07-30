@@ -112,7 +112,7 @@ export class UI {
           <li><span class="ico">⤒</span><kbd>Space</kbd><em>起跳</em><span class="tip">配合台跳飞更远</span></li>
           <li><span class="ico">↓</span><kbd>Shift</kbd><em>收腿加速</em><span class="tip">低姿态减风阻</span></li>
           <li><span class="ico">↻</span><kbd>Q</kbd><kbd>E</kbd><em>空中转体</em><span class="tip">只在腾空时生效，落地要收正</span></li>
-          <li><span class="ico">🎯</span><kbd>L</kbd><em>最优走线</em><span class="tip">发光带贴着雪面穿过所有旗门，可随时开关</span></li>
+          <li><span class="ico">🎯</span><kbd>L</kbd><em>最优走线</em><span class="tip">雪面上的深蓝箭头指向下一个旗门，可随时开关</span></li>
           <li><span class="ico">⏸</span><kbd>P</kbd> / <kbd>R</kbd><em>暂停 / 重滑</em><span class="tip">方向键 ← → ↓ 与 A/S/D 等价</span></li>
         </ul>
         <p class="key-goal">目标：过旗门连击拿分，别撞树石冰塔，尽量压着目标时间冲线。</p>

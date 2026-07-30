@@ -18,7 +18,7 @@
     {
       "name": "resort deer-valley: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 234, \"points\": 2, \"triangles\": 140497, \"gates\": 29, \"kickers\": 2}"
+      "detail": "{\"meshes\": 234, \"points\": 2, \"triangles\": 132749, \"gates\": 29, \"kickers\": 2}"
     },
     {
       "name": "resort deer-valley: button-only autopilot stays on the piste",
@@ -63,17 +63,17 @@
     {
       "name": "resort deer-valley: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 202, 205, 177, 198, 129"
+      "detail": "luma 203, 206, 200, 156, 126"
     },
     {
       "name": "resort deer-valley: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 202, 205, 177"
+      "detail": "lower-frame luma 203, 206, 200"
     },
     {
       "name": "resort aspen-snowmass: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 220, \"points\": 2, \"triangles\": 148097, \"gates\": 29, \"kickers\": 5}"
+      "detail": "{\"meshes\": 220, \"points\": 2, \"triangles\": 137909, \"gates\": 29, \"kickers\": 5}"
     },
     {
       "name": "resort aspen-snowmass: button-only autopilot stays on the piste",
@@ -118,17 +118,17 @@
     {
       "name": "resort aspen-snowmass: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 197, 206, 221, 201, 196"
+      "detail": "luma 197, 196, 196, 201, 189"
     },
     {
       "name": "resort aspen-snowmass: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 197, 206, 221"
+      "detail": "lower-frame luma 197, 196, 196"
     },
     {
       "name": "resort niseko: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 250, \"points\": 2, \"triangles\": 156107, \"gates\": 29, \"kickers\": 4}"
+      "detail": "{\"meshes\": 250, \"points\": 2, \"triangles\": 147535, \"gates\": 29, \"kickers\": 4}"
     },
     {
       "name": "resort niseko: button-only autopilot stays on the piste",
@@ -173,17 +173,17 @@
     {
       "name": "resort niseko: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 201, 194, 173, 199, 111"
+      "detail": "luma 196, 200, 199, 196, 204"
     },
     {
       "name": "resort niseko: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 201, 194, 173"
+      "detail": "lower-frame luma 196, 200, 199"
     },
     {
       "name": "resort palisades-tahoe: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 214, \"points\": 2, \"triangles\": 142223, \"gates\": 32, \"kickers\": 5}"
+      "detail": "{\"meshes\": 198, \"points\": 2, \"triangles\": 124235, \"gates\": 29, \"kickers\": 5}"
     },
     {
       "name": "resort palisades-tahoe: button-only autopilot stays on the piste",
@@ -208,12 +208,12 @@
     {
       "name": "resort palisades-tahoe: optimal line present + visible by default",
       "pass": true,
-      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 32, \"worstMissM\": 0.51, \"planPoints\": 69}"
+      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 29, \"worstMissM\": 0.51, \"planPoints\": 69}"
     },
     {
       "name": "resort palisades-tahoe: optimal line threads the gates",
       "pass": true,
-      "detail": "gatesChecked 32, worstMiss 0.51m"
+      "detail": "gatesChecked 29, worstMiss 0.51m"
     },
     {
       "name": "resort palisades-tahoe: optimal line toggles off/on",
@@ -228,17 +228,17 @@
     {
       "name": "resort palisades-tahoe: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 206, 200, 197, 142, 201"
+      "detail": "luma 195, 205, 204, 187, 199"
     },
     {
       "name": "resort palisades-tahoe: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 206, 200, 197"
+      "detail": "lower-frame luma 195, 205, 204"
     },
     {
       "name": "resort big-sky: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 203, \"points\": 2, \"triangles\": 131459, \"gates\": 32, \"kickers\": 6}"
+      "detail": "{\"meshes\": 203, \"points\": 2, \"triangles\": 120075, \"gates\": 32, \"kickers\": 6}"
     },
     {
       "name": "resort big-sky: button-only autopilot stays on the piste",
@@ -283,17 +283,17 @@
     {
       "name": "resort big-sky: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 194, 200, 218, 188, 146"
+      "detail": "luma 193, 200, 195, 187, 145"
     },
     {
       "name": "resort big-sky: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 194, 200, 218"
+      "detail": "lower-frame luma 193, 200, 195"
     },
     {
       "name": "resort zermatt: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 185, \"points\": 2, \"triangles\": 118887, \"gates\": 32, \"kickers\": 3}"
+      "detail": "{\"meshes\": 185, \"points\": 2, \"triangles\": 106891, \"gates\": 32, \"kickers\": 3}"
     },
     {
       "name": "resort zermatt: button-only autopilot stays on the piste",
@@ -338,12 +338,12 @@
     {
       "name": "resort zermatt: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 206, 186, 185, 175, 185"
+      "detail": "luma 147, 203, 206, 191, 208"
     },
     {
       "name": "resort zermatt: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 206, 186, 185"
+      "detail": "lower-frame luma 147, 203, 206"
     },
     {
       "name": "run starts via START button",
@@ -363,7 +363,7 @@
     {
       "name": "BUTTON 左转 steers left",
       "pass": true,
-      "detail": "heading 0.00->-0.95, x 9.5->-4.9"
+      "detail": "heading 0.00->-0.95, x 9.5->-5.3"
     },
     {
       "name": "BUTTON 右转 steers right",
@@ -373,17 +373,17 @@
     {
       "name": "carving across the fall line costs speed (real ski behaviour)",
       "pass": true,
-      "detail": "straight 17.5 m/s vs carving 6.6 m/s at heading -0.95 rad"
+      "detail": "straight 17.7 m/s vs carving 6.7 m/s at heading -0.95 rad"
     },
     {
       "name": "BUTTON 犁式刹车 slows on a black run",
       "pass": true,
-      "detail": "8.1 -> 0.2 m/s"
+      "detail": "8.2 -> 0.3 m/s"
     },
     {
       "name": "BUTTON 收腿加速 gains speed",
       "pass": true,
-      "detail": "6.6 -> 12.0 m/s"
+      "detail": "6.5 -> 11.9 m/s"
     },
     {
       "name": "BUTTON 起跳 leaves the ground",
@@ -403,7 +403,7 @@
     {
       "name": "passing between the poles scores a gate",
       "pass": true,
-      "detail": "hit 3 -> 4, score 1597, combo 1"
+      "detail": "hit 3 -> 4, score 1595, combo 1"
     },
     {
       "name": "crossing the finish shows the results card",
@@ -423,7 +423,7 @@
     {
       "name": "再滑一次 restarts a fresh run",
       "pass": true,
-      "detail": "mode=run t=0.1"
+      "detail": "mode=run t=0.0"
     },
     {
       "name": "pause button reachable and works",

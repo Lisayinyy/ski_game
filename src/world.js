@@ -544,11 +544,12 @@ export class World {
   /* --------------------------------------------------------- ideal line */
 
   /**
-   * The "optimal line": a smooth spline that threads every slalom gate from the start
-   * ramp to the finish, drawn as a glowing ribbon that hugs the snow. It is precomputed
-   * from planChunkGates() (deterministic, same coordinates the gate meshes use), so it is
-   * complete the moment the run loads and never depends on chunk streaming. Players can
-   * hide it with the on-screen 走线 toggle / the L key.
+   * The "optimal line": a smooth spline that threads every slalom gate from the start ramp
+   * to the finish. Instead of a floating ribbon it is drawn as a row of flat DIRECTION
+   * ARROWS painted on the snow, each lying flat on the surface and pointing downhill toward
+   * the next gate. Precomputed from planChunkGates() (deterministic, same coordinates the
+   * gate meshes use) so it is complete the moment the run loads and never depends on chunk
+   * streaming. Toggle with the on-screen 🎯 button / the L key.
    */
   buildIdealLine() {
     const t = this.terrain;
@@ -565,54 +566,87 @@ export class World {
     this.idealLinePts = pts;
     if (pts.length < 2) { this.idealLine = null; return; }
 
-    // smooth spline through the gate centres, sampled densely and dropped onto the snow
+    // smooth spline through the gate centres, sampled densely (kept for lineInfo + arrow placement)
     const ctrl = pts.map((p) => new THREE.Vector3(p.x, 0, p.z));
     const curve = new THREE.CatmullRomCurve3(ctrl, false, 'catmullrom', 0.5);
     const samples = Math.max(48, Math.min(900, pts.length * 10));
     const path = [];
     for (let i = 0; i <= samples; i++) {
       const v = curve.getPoint(i / samples);
-      v.y = t.elevation(v.x, v.z) + 0.45; // hover just above the surface
+      v.y = t.elevation(v.x, v.z);
       path.push(v);
     }
     this.idealCurve = new THREE.CatmullRomCurve3(path, false, 'catmullrom', 0.5);
 
-    const geo = new THREE.TubeGeometry(this.idealCurve, samples, 1.35, 8, false);
+    // --- a chevron arrow footprint, lying flat (XZ plane), tip pointing to -Z (downhill)
+    const AL = 2.6, AW = 2.2, TH = 1.1; // length, half-width, tail thickness
+    const shape = new THREE.Shape();
+    shape.moveTo(0, -AL * 0.5);          // tip (downhill, -Z)
+    shape.lineTo(AW, AL * 0.32);         // right wing
+    shape.lineTo(AW - TH, AL * 0.5);     // right inner
+    shape.lineTo(0, AL * 0.5 - TH * 1.1);// notch
+    shape.lineTo(-(AW - TH), AL * 0.5);  // left inner
+    shape.lineTo(-AW, AL * 0.32);        // left wing
+    shape.closePath();
+    const arrow2d = new THREE.ShapeGeometry(shape); // in XY, +Y = uphill tail
+
+    const total = this.idealCurve.getLength();
+    const STEP = 6.0;                       // metres between arrows
+    const count = Math.max(2, Math.floor(total / STEP));
+    const geos = [];
+    const up = new THREE.Vector3(0, 1, 0);
+    const q = new THREE.Quaternion();
+    const m = new THREE.Matrix4();
+    for (let i = 0; i < count; i++) {
+      const u = i / (count - 1);
+      const p = this.idealCurve.getPointAt(u);
+      const tan = this.idealCurve.getTangentAt(u).normalize(); // points downhill (-Z-ish)
+      const g = arrow2d.clone();
+      // lay flat: XY-shape -> XZ-plane (rotate -90° about X), then yaw to face the tangent
+      const yaw = Math.atan2(tan.x, tan.z); // heading in XZ
+      m.makeRotationX(-Math.PI / 2);
+      q.setFromAxisAngle(up, yaw);
+      const mm = new THREE.Matrix4().makeRotationFromQuaternion(q).multiply(m);
+      mm.setPosition(p.x, t.elevation(p.x, p.z) + 0.12, p.z); // sit on the snow
+      g.applyMatrix4(mm);
+      // per-vertex sequence so the highlight can travel down the trail of arrows
+      const n = g.attributes.position.count;
+      const seq = new Float32Array(n).fill(i / count);
+      g.setAttribute('aSeq', new THREE.BufferAttribute(seq, 1));
+      geos.push(g);
+    }
+    const geo = mergeGeometries(geos, false);
+
     const uniforms = {
       uTime: { value: 0 },
-      uColor: { value: new THREE.Color(0x18c8ff) },
-      uEdge: { value: new THREE.Color(0x0a3a6b) },
+      uColor: { value: new THREE.Color(0x14357a) },   // deep blue
+      uHi: { value: new THREE.Color(0x4f8bff) },       // brighter pulse crest
     };
     const mat = new THREE.ShaderMaterial({
       transparent: true,
       depthWrite: false,
-      // Normal alpha blend, not additive: on near-white snow additive barely shows. We want
-      // a saturated painted guide line that clearly reads against the piste.
-      blending: THREE.NormalBlending,
       side: THREE.DoubleSide,
+      polygonOffset: true,          // keep the decal off the snow z-buffer
+      polygonOffsetFactor: -2,
+      polygonOffsetUnits: -2,
       uniforms,
       vertexShader: `
-        varying vec2 vUv;
+        attribute float aSeq;
+        varying float vSeq;
         void main() {
-          vUv = uv;
+          vSeq = aSeq;
           gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
         }`,
       fragmentShader: `
         uniform float uTime;
         uniform vec3 uColor;
-        uniform vec3 uEdge;
-        varying vec2 vUv;
+        uniform vec3 uHi;
+        varying float vSeq;
         void main() {
-          // fade the tube's cross-section so the band has a soft dark rim + bright core
-          float core = smoothstep(0.0, 0.32, vUv.y) * smoothstep(1.0, 0.68, vUv.y);
-          float rim  = smoothstep(0.0, 0.12, vUv.y) * smoothstep(1.0, 0.88, vUv.y);
-          // chevrons flowing downhill along the line
-          float flow = sin((vUv.x * 55.0) - uTime * 4.0);
-          float chev = smoothstep(0.15, 0.9, flow);
-          vec3 col = mix(uEdge, uColor, core);
-          col = mix(col, vec3(0.85, 0.98, 1.0), chev * core * 0.7);
-          float a = rim * (0.55 + 0.4 * chev);
-          gl_FragColor = vec4(col, a);
+          // a bright pulse travels downhill along the arrow trail
+          float wave = 0.5 + 0.5 * sin((vSeq * 34.0) - uTime * 3.2);
+          vec3 col = mix(uColor, uHi, pow(wave, 2.0));
+          gl_FragColor = vec4(col, 0.9);
         }`,
     });
     const mesh = new THREE.Mesh(geo, mat);
