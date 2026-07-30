@@ -143,6 +143,7 @@ class PropLibrary {
     this.bamboo = this.buildBamboo();
     this.serac = this.buildSerac();
     this.snowgun = this.buildSnowgun();
+    this.cliff = this.buildCliff();
   }
 
   /**
@@ -169,11 +170,24 @@ class PropLibrary {
   buildTree(kind) {
     const parts = [];
     if (kind === 'spruce') {
+      // Heavy snow-laden spruce (video reference: branches bowed under thick snow). Each
+      // green tier carries a broad, thick snow layer that overhangs it, and a couple of
+      // lower boughs droop under the load, so the tree reads as buried rather than dusted.
       parts.push(paint(new THREE.CylinderGeometry(0.26, 0.4, 3.0, 6).translate(0, 1.5, 0), this.c.trunk));
       for (let i = 0; i < 3; i++) {
         parts.push(paint(new THREE.ConeGeometry(2.5 - i * 0.52, 3.6, 7).translate(0, 3.0 + i * 1.8, 0), this.c.foliage));
-        parts.push(paint(new THREE.ConeGeometry(2.0 - i * 0.46, 0.52, 7).translate(0, 4.62 + i * 1.8, 0), this.c.snow));
+        // thick, slightly overhanging snow load on each tier (wider than the green below)
+        parts.push(paint(new THREE.ConeGeometry(2.32 - i * 0.5, 1.05, 7).translate(0, 4.35 + i * 1.8, 0), this.c.snow));
       }
+      // drooping lower boughs sagging under the snow
+      for (const sgn of [-1, 1]) {
+        const bough = new THREE.ConeGeometry(0.7, 1.9, 5);
+        bough.rotateZ(sgn * 1.15);
+        bough.translate(sgn * 1.7, 2.7, 0);
+        parts.push(paint(bough, this.c.snow));
+      }
+      // a snow cap crowning the top
+      parts.push(paint(new THREE.ConeGeometry(0.72, 1.4, 7).translate(0, 8.5, 0), this.c.snow));
     } else if (kind === 'birch') {
       parts.push(paint(new THREE.CylinderGeometry(0.15, 0.22, 7.0, 5).translate(0, 3.5, 0), this.c.birch));
       for (let i = 0; i < 3; i++) {
@@ -236,6 +250,37 @@ class PropLibrary {
     barrel.translate(0, 2.5, -0.3);
     return mergeGeometries([base, paint(barrel, this.c.steel)], false);
   }
+
+  /**
+   * A layered rock cliff / outcrop — the "大山质感" that lines steep runs (like the video's
+   * exposed granite walls). Several stacked, offset slabs read as bedded rock strata, tilted
+   * a touch and capped with wind-blown snow on the top ledges. Deterministic-ish variety is
+   * driven by the caller's rotation/scale; the base shape stays fixed so it can be merged.
+   */
+  buildCliff() {
+    const parts = [];
+    // stacked strata, each narrower + set back as it rises, like a weathered rock face
+    const layers = [
+      { w: 7.0, h: 2.4, d: 5.2, y: 1.2, ox: 0.0, oz: 0.0, rot: 0.05 },
+      { w: 6.2, h: 2.1, d: 4.4, y: 3.3, ox: 0.5, oz: -0.4, rot: -0.08 },
+      { w: 5.0, h: 1.9, d: 3.6, y: 5.1, ox: -0.4, oz: 0.3, rot: 0.12 },
+      { w: 3.6, h: 1.7, d: 2.8, y: 6.7, ox: 0.7, oz: -0.2, rot: -0.05 },
+    ];
+    // two rock tones so the strata read as bedded layers, not one solid block
+    const rockDark = this.c.rock.map((v) => v * 0.82);
+    for (let i = 0; i < layers.length; i++) {
+      const L = layers[i];
+      const b = new THREE.BoxGeometry(L.w, L.h, L.d);
+      b.rotateY(L.rot);
+      b.translate(L.ox, L.y, L.oz);
+      parts.push(paint(b, i % 2 ? rockDark : this.c.rock));
+    }
+    // snow caps on the wider lower ledges (wind scours the steep upper faces bare)
+    const cap0 = new THREE.BoxGeometry(6.6, 0.5, 4.9).translate(0.0, 2.55, 0.0);
+    const cap1 = new THREE.BoxGeometry(4.7, 0.45, 3.4).translate(-0.4, 6.15, 0.3);
+    parts.push(paint(cap0, this.c.snow), paint(cap1, this.c.snow));
+    return mergeGeometries(parts, false);
+  }
 }
 
 /* -------------------------------------------------------------------- world */
@@ -249,6 +294,18 @@ export class World {
     this.rng = makeRng(resort.seed);
 
     this.finishZ = -resort.run.lengthM;
+
+    // How much bare rock lines this run. Green groomers stay clean; steeper runs get more,
+    // grander cliffs. Driven by difficulty + pitch, no new resort schema needed.
+    const CLIFF = {
+      green: { d: 0.0, s: 0.0 },
+      blue: { d: 0.05, s: 0.3 },
+      black: { d: 0.11, s: 0.7 },
+      double: { d: 0.16, s: 1.1 },
+    };
+    const cf = CLIFF[resort.difficulty] || CLIFF.blue;
+    this.cliffDensity = cf.d;
+    this.cliffScale = cf.s;
 
     this.decorMat = new THREE.MeshStandardMaterial({
       vertexColors: true, flatShading: true, roughness: 0.92,
@@ -726,6 +783,21 @@ export class World {
         const s = 0.6 + rng() * 0.9;
         merged.push(place(this.lib.rock, x, t.elevation(x, z) + 0.35 * s, z, s, rng() * 6.28));
         hazards.push({ x, z, r: 1.5 * s, type: 'rock' });
+      }
+      // --- flank rock cliffs: exposed strata walls that frame steep runs (大山质感).
+      // Placed well beyond the piste edge so they line the run without blocking it; steeper
+      // resorts (bigger terrain.pitch) get more, grander walls. Snowy/forested green runs
+      // (deer valley) stay clear of big rock. Sunk into the massif so no base floats.
+      const cliffChance = this.cliffDensity;
+      if (this.lib.cliff && cliffChance > 0 && z < -120 && rng() < cliffChance) {
+        const side = rng() < 0.5 ? -1 : 1;
+        const off = t.pisteHalf + 16 + rng() * 46;         // far outside the run
+        const x = cx + side * off;
+        const s = 0.9 + rng() * (0.8 + this.cliffScale);   // steeper runs => taller walls
+        const yTop = Math.max(t.elevation(x, z), t.massifY ? t.massifY(x, z) : t.elevation(x, z));
+        merged.push(place(this.lib.cliff, x, yTop - 1.2, z, s, rng() * 6.28));
+        // only close cliffs are a real hazard; distant ones are pure backdrop
+        if (off < t.pisteHalf + 26) hazards.push({ x, z, r: 3.6 * s, type: 'rock' });
       }
       // --- resort-specific dressing
       if (r.props.serac && z < -150 && rng() < 0.06) {
