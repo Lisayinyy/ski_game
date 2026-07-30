@@ -43,12 +43,12 @@
     {
       "name": "resort deer-valley: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 201, 197, 198, 205, 196"
+      "detail": "luma 200, 197, 198, 202, 194"
     },
     {
       "name": "resort deer-valley: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 201, 197, 198"
+      "detail": "lower-frame luma 200, 197, 198"
     },
     {
       "name": "resort aspen-snowmass: geometry + gates + kickers",
@@ -78,12 +78,12 @@
     {
       "name": "resort aspen-snowmass: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 197, 199, 206, 197, 129"
+      "detail": "luma 203, 201, 200, 197, 206"
     },
     {
       "name": "resort aspen-snowmass: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 197, 199, 206"
+      "detail": "lower-frame luma 203, 201, 200"
     },
     {
       "name": "resort niseko: geometry + gates + kickers",
@@ -113,12 +113,12 @@
     {
       "name": "resort niseko: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 193, 193, 196, 197, 220"
+      "detail": "luma 189, 204, 192, 194, 180"
     },
     {
       "name": "resort niseko: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 193, 193, 196"
+      "detail": "lower-frame luma 189, 204, 192"
     },
     {
       "name": "resort palisades-tahoe: geometry + gates + kickers",
@@ -148,12 +148,12 @@
     {
       "name": "resort palisades-tahoe: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 207, 209, 210, 185, 206"
+      "detail": "luma 199, 200, 202, 190, 205"
     },
     {
       "name": "resort palisades-tahoe: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 207, 209, 210"
+      "detail": "lower-frame luma 199, 200, 202"
     },
     {
       "name": "resort big-sky: geometry + gates + kickers",
@@ -183,12 +183,12 @@
     {
       "name": "resort big-sky: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 193, 197, 200, 146, 205"
+      "detail": "luma 184, 191, 194, 190, 205"
     },
     {
       "name": "resort big-sky: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 193, 197, 200"
+      "detail": "lower-frame luma 184, 191, 194"
     },
     {
       "name": "resort zermatt: geometry + gates + kickers",
@@ -218,12 +218,12 @@
     {
       "name": "resort zermatt: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 205, 207, 209, 202, 203"
+      "detail": "luma 204, 202, 205, 198, 204"
     },
     {
       "name": "resort zermatt: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 205, 207, 209"
+      "detail": "lower-frame luma 204, 202, 205"
     },
     {
       "name": "run starts via START button",
@@ -253,7 +253,7 @@
     {
       "name": "carving across the fall line costs speed (real ski behaviour)",
       "pass": true,
-      "detail": "straight 17.1 m/s vs carving 10.6 m/s at heading -0.95 rad"
+      "detail": "straight 17.0 m/s vs carving 10.6 m/s at heading -0.95 rad"
     },
     {
       "name": "BUTTON 犁式刹车 slows on a black run",
@@ -263,7 +263,7 @@
     {
       "name": "BUTTON 收腿加速 gains speed",
       "pass": true,
-      "detail": "0.9 -> 3.2 m/s"
+      "detail": "1.0 -> 3.2 m/s"
     },
     {
       "name": "BUTTON 起跳 leaves the ground",
@@ -283,7 +283,7 @@
     {
       "name": "passing between the poles scores a gate",
       "pass": true,
-      "detail": "hit 3 -> 4, score 2038, combo 2.5999999999999996"
+      "detail": "hit 3 -> 4, score 1818, combo 1.5"
     },
     {
       "name": "crossing the finish shows the results card",

@@ -104,6 +104,18 @@ export class UI {
         <span><small>参考顶部海拔</small><b>≈ ${resort.facts.summitRefM} m</b></span>
         <span><small>备注</small><b>${resort.facts.note}</b></span>
       </div>
+      <div class="brief-controls">
+        <h3>操作指南 <small>屏幕按钮 / 键盘 都行</small></h3>
+        <ul class="key-list">
+          <li><span class="ico">◀ ▶</span><kbd>A</kbd><kbd>D</kbd><em>左转 / 右转</em><span class="tip">长按走弧线，轻点小幅修正</span></li>
+          <li><span class="ico">🍕</span><kbd>S</kbd><em>犁式刹车</em><span class="tip">双板内八减速</span></li>
+          <li><span class="ico">⤒</span><kbd>Space</kbd><em>起跳</em><span class="tip">配合台跳飞更远</span></li>
+          <li><span class="ico">↓</span><kbd>Shift</kbd><em>收腿加速</em><span class="tip">低姿态减风阻</span></li>
+          <li><span class="ico">↻</span><kbd>Q</kbd><kbd>E</kbd><em>空中转体</em><span class="tip">只在腾空时生效，落地要收正</span></li>
+          <li><span class="ico">⏸</span><kbd>P</kbd> / <kbd>R</kbd><em>暂停 / 重滑</em><span class="tip">方向键 ← → ↓ 与 A/S/D 等价</span></li>
+        </ul>
+        <p class="key-goal">目标：过旗门连击拿分，别撞树石冰塔，尽量压着目标时间冲线。</p>
+      </div>
       <p class="brief-note">参考数据为公开资料的近似值，仅用于氛围呈现，非官方数据。场景为原创低多边形建模，未使用任何 Ikon Pass 或雪场的图片与标识。</p>
       ${best ? `<p class="brief-best">个人最佳：<b>${best.score.toLocaleString()}</b> 分 · ${formatTime(best.time)} · ${best.medal}</p>` : ''}
     `;

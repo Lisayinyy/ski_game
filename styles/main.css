@@ -257,6 +257,29 @@ b, strong { font-weight: 800; }
 .brief-facts b { color: var(--ice); }
 .brief-best { font-size: 12px; color: var(--ink-dim); }
 
+/* --------------------------------------------------- brief: controls guide */
+.brief-controls {
+  margin: 4px 0 6px; padding: 14px 16px; border-radius: 14px;
+  background: rgba(12, 34, 66, 0.5); border: 1px solid var(--panel-line);
+}
+.brief-controls h3 {
+  margin: 0 0 10px; font-size: 13px; letter-spacing: 0.04em;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.brief-controls h3 small { font-size: 10px; font-weight: 600; color: var(--ink-dim); letter-spacing: 0.1em; }
+.key-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 7px; }
+.key-list li { display: flex; align-items: center; gap: 8px; font-size: 12px; flex-wrap: wrap; }
+.key-list .ico { width: 30px; text-align: center; font-size: 13px; color: var(--ice); flex: 0 0 auto; }
+.key-list kbd {
+  font: 700 11px/1 ui-monospace, monospace; color: #e8f4ff;
+  padding: 3px 7px; border-radius: 6px; min-width: 14px; text-align: center;
+  background: rgba(143, 227, 255, 0.12); border: 1px solid rgba(143, 227, 255, 0.28);
+  box-shadow: 0 1px 0 rgba(143, 227, 255, 0.2);
+}
+.key-list em { font-style: normal; font-weight: 700; color: var(--ink); margin-left: 2px; }
+.key-list .tip { font-size: 10px; color: var(--ink-dim); letter-spacing: 0.02em; margin-left: auto; }
+.key-goal { margin: 11px 0 0; font-size: 11px; line-height: 1.7; color: #b6e5ff; }
+
 /* ---------------------------------------------------------------- results */
 .results { text-align: center; }
 .res-medal { font-size: 68px; line-height: 1; filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.5)); }
