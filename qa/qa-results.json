@@ -18,12 +18,12 @@
     {
       "name": "resort deer-valley: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 233, \"points\": 2, \"triangles\": 131377, \"gates\": 29, \"kickers\": 2}"
+      "detail": "{\"meshes\": 234, \"points\": 2, \"triangles\": 140497, \"gates\": 29, \"kickers\": 2}"
     },
     {
       "name": "resort deer-valley: button-only autopilot stays on the piste",
       "pass": true,
-      "detail": "x -12.3 vs centre -10.5, offPiste 0.00"
+      "detail": "x -12.8 vs centre -10.5, offPiste 0.00"
     },
     {
       "name": "resort deer-valley: terrain normals point at the sky",
@@ -38,27 +38,47 @@
     {
       "name": "resort deer-valley: vista sorts after the sky, before the terrain",
       "pass": true,
-      "detail": "{\"normalUp\": 0.9671238877155163, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 9, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+      "detail": "{\"normalUp\": 0.9671697150042028, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 9, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort deer-valley: optimal line present + visible by default",
+      "pass": true,
+      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 29, \"worstMissM\": 0.44, \"planPoints\": 57}"
+    },
+    {
+      "name": "resort deer-valley: optimal line threads the gates",
+      "pass": true,
+      "detail": "gatesChecked 29, worstMiss 0.44m"
+    },
+    {
+      "name": "resort deer-valley: optimal line toggles off/on",
+      "pass": true,
+      "detail": "off=False on=True"
+    },
+    {
+      "name": "resort deer-valley: green run stays (almost) mogul-free",
+      "pass": true,
+      "detail": "bump zones 0/51, max 0.00"
     },
     {
       "name": "resort deer-valley: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 200, 197, 198, 202, 194"
+      "detail": "luma 202, 205, 177, 198, 129"
     },
     {
       "name": "resort deer-valley: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 200, 197, 198"
+      "detail": "lower-frame luma 202, 205, 177"
     },
     {
       "name": "resort aspen-snowmass: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 219, \"points\": 2, \"triangles\": 136097, \"gates\": 29, \"kickers\": 5}"
+      "detail": "{\"meshes\": 220, \"points\": 2, \"triangles\": 148097, \"gates\": 29, \"kickers\": 5}"
     },
     {
       "name": "resort aspen-snowmass: button-only autopilot stays on the piste",
       "pass": true,
-      "detail": "x -26.4 vs centre -19.9, offPiste 0.00"
+      "detail": "x -26.7 vs centre -20.1, offPiste 0.00"
     },
     {
       "name": "resort aspen-snowmass: terrain normals point at the sky",
@@ -73,27 +93,47 @@
     {
       "name": "resort aspen-snowmass: vista sorts after the sky, before the terrain",
       "pass": true,
-      "detail": "{\"normalUp\": 0.9488781256145901, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 10, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+      "detail": "{\"normalUp\": 0.9490104791558819, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 10, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort aspen-snowmass: optimal line present + visible by default",
+      "pass": true,
+      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 29, \"worstMissM\": 0.89, \"planPoints\": 75}"
+    },
+    {
+      "name": "resort aspen-snowmass: optimal line threads the gates",
+      "pass": true,
+      "detail": "gatesChecked 29, worstMiss 0.89m"
+    },
+    {
+      "name": "resort aspen-snowmass: optimal line toggles off/on",
+      "pass": true,
+      "detail": "off=False on=True"
+    },
+    {
+      "name": "resort aspen-snowmass: blue run has a modest mogul stretch",
+      "pass": true,
+      "detail": "bump zones 13/51, max 1.00"
     },
     {
       "name": "resort aspen-snowmass: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 203, 201, 200, 197, 206"
+      "detail": "luma 197, 206, 221, 201, 196"
     },
     {
       "name": "resort aspen-snowmass: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 203, 201, 200"
+      "detail": "lower-frame luma 197, 206, 221"
     },
     {
       "name": "resort niseko: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 249, \"points\": 2, \"triangles\": 146027, \"gates\": 29, \"kickers\": 4}"
+      "detail": "{\"meshes\": 250, \"points\": 2, \"triangles\": 156107, \"gates\": 29, \"kickers\": 4}"
     },
     {
       "name": "resort niseko: button-only autopilot stays on the piste",
       "pass": true,
-      "detail": "x -23.0 vs centre -18.6, offPiste 0.00"
+      "detail": "x -23.5 vs centre -18.7, offPiste 0.00"
     },
     {
       "name": "resort niseko: terrain normals point at the sky",
@@ -108,27 +148,47 @@
     {
       "name": "resort niseko: vista sorts after the sky, before the terrain",
       "pass": true,
-      "detail": "{\"normalUp\": 0.9598249933160381, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+      "detail": "{\"normalUp\": 0.9601165012077049, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort niseko: optimal line present + visible by default",
+      "pass": true,
+      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 29, \"worstMissM\": 0.96, \"planPoints\": 63}"
+    },
+    {
+      "name": "resort niseko: optimal line threads the gates",
+      "pass": true,
+      "detail": "gatesChecked 29, worstMiss 0.96m"
+    },
+    {
+      "name": "resort niseko: optimal line toggles off/on",
+      "pass": true,
+      "detail": "off=False on=True"
+    },
+    {
+      "name": "resort niseko: blue run has a modest mogul stretch",
+      "pass": true,
+      "detail": "bump zones 14/51, max 1.00"
     },
     {
       "name": "resort niseko: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 189, 204, 192, 194, 180"
+      "detail": "luma 201, 194, 173, 199, 111"
     },
     {
       "name": "resort niseko: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 189, 204, 192"
+      "detail": "lower-frame luma 201, 194, 173"
     },
     {
       "name": "resort palisades-tahoe: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 197, \"points\": 2, \"triangles\": 122551, \"gates\": 29, \"kickers\": 5}"
+      "detail": "{\"meshes\": 214, \"points\": 2, \"triangles\": 142223, \"gates\": 32, \"kickers\": 5}"
     },
     {
       "name": "resort palisades-tahoe: button-only autopilot stays on the piste",
       "pass": true,
-      "detail": "x -35.5 vs centre -28.3, offPiste 0.00"
+      "detail": "x -35.2 vs centre -28.8, offPiste 0.00"
     },
     {
       "name": "resort palisades-tahoe: terrain normals point at the sky",
@@ -143,27 +203,47 @@
     {
       "name": "resort palisades-tahoe: vista sorts after the sky, before the terrain",
       "pass": true,
-      "detail": "{\"normalUp\": 0.912619591554006, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 12, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+      "detail": "{\"normalUp\": 0.9129817028104523, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 12, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort palisades-tahoe: optimal line present + visible by default",
+      "pass": true,
+      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 32, \"worstMissM\": 0.51, \"planPoints\": 69}"
+    },
+    {
+      "name": "resort palisades-tahoe: optimal line threads the gates",
+      "pass": true,
+      "detail": "gatesChecked 32, worstMiss 0.51m"
+    },
+    {
+      "name": "resort palisades-tahoe: optimal line toggles off/on",
+      "pass": true,
+      "detail": "off=False on=True"
+    },
+    {
+      "name": "resort palisades-tahoe: black run has packed mogul fields",
+      "pass": true,
+      "detail": "bump zones 29/51, max 1.00"
     },
     {
       "name": "resort palisades-tahoe: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 199, 200, 202, 190, 205"
+      "detail": "luma 206, 200, 197, 142, 201"
     },
     {
       "name": "resort palisades-tahoe: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 199, 200, 202"
+      "detail": "lower-frame luma 206, 200, 197"
     },
     {
       "name": "resort big-sky: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 202, \"points\": 2, \"triangles\": 118019, \"gates\": 32, \"kickers\": 6}"
+      "detail": "{\"meshes\": 203, \"points\": 2, \"triangles\": 131459, \"gates\": 32, \"kickers\": 6}"
     },
     {
       "name": "resort big-sky: button-only autopilot stays on the piste",
       "pass": true,
-      "detail": "x -32.3 vs centre -26.2, offPiste 0.00"
+      "detail": "x -31.2 vs centre -26.5, offPiste 0.00"
     },
     {
       "name": "resort big-sky: terrain normals point at the sky",
@@ -178,27 +258,47 @@
     {
       "name": "resort big-sky: vista sorts after the sky, before the terrain",
       "pass": true,
-      "detail": "{\"normalUp\": 0.9237663503929421, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+      "detail": "{\"normalUp\": 0.923912554434788, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort big-sky: optimal line present + visible by default",
+      "pass": true,
+      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 32, \"worstMissM\": 0.87, \"planPoints\": 84}"
+    },
+    {
+      "name": "resort big-sky: optimal line threads the gates",
+      "pass": true,
+      "detail": "gatesChecked 32, worstMiss 0.87m"
+    },
+    {
+      "name": "resort big-sky: optimal line toggles off/on",
+      "pass": true,
+      "detail": "off=False on=True"
+    },
+    {
+      "name": "resort big-sky: black run has packed mogul fields",
+      "pass": true,
+      "detail": "bump zones 28/51, max 1.00"
     },
     {
       "name": "resort big-sky: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 184, 191, 194, 190, 205"
+      "detail": "luma 194, 200, 218, 188, 146"
     },
     {
       "name": "resort big-sky: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 184, 191, 194"
+      "detail": "lower-frame luma 194, 200, 218"
     },
     {
       "name": "resort zermatt: geometry + gates + kickers",
       "pass": true,
-      "detail": "{\"meshes\": 184, \"points\": 2, \"triangles\": 104487, \"gates\": 32, \"kickers\": 3}"
+      "detail": "{\"meshes\": 185, \"points\": 2, \"triangles\": 118887, \"gates\": 32, \"kickers\": 3}"
     },
     {
       "name": "resort zermatt: button-only autopilot stays on the piste",
       "pass": true,
-      "detail": "x -38.8 vs centre -35.6, offPiste 0.00"
+      "detail": "x -39.8 vs centre -35.5, offPiste 0.00"
     },
     {
       "name": "resort zermatt: terrain normals point at the sky",
@@ -213,17 +313,37 @@
     {
       "name": "resort zermatt: vista sorts after the sky, before the terrain",
       "pass": true,
-      "detail": "{\"normalUp\": 0.8911594234278173, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+      "detail": "{\"normalUp\": 0.8912063998646206, \"massif\": true, \"vistaGroupOrder\": 0, \"vistaLayers\": 8, \"vistaAheadOfTerrain\": true, \"skyBehindVista\": true}"
+    },
+    {
+      "name": "resort zermatt: optimal line present + visible by default",
+      "pass": true,
+      "detail": "{\"present\": true, \"visible\": true, \"gatesChecked\": 32, \"worstMissM\": 1.52, \"planPoints\": 96}"
+    },
+    {
+      "name": "resort zermatt: optimal line threads the gates",
+      "pass": true,
+      "detail": "gatesChecked 32, worstMiss 1.52m"
+    },
+    {
+      "name": "resort zermatt: optimal line toggles off/on",
+      "pass": true,
+      "detail": "off=False on=True"
+    },
+    {
+      "name": "resort zermatt: black run has packed mogul fields",
+      "pass": true,
+      "detail": "bump zones 29/51, max 1.00"
     },
     {
       "name": "resort zermatt: snow reads as lit snow, not grey concrete",
       "pass": true,
-      "detail": "luma 204, 202, 205, 198, 204"
+      "detail": "luma 206, 186, 185, 175, 185"
     },
     {
       "name": "resort zermatt: no sky gap under the piste",
       "pass": true,
-      "detail": "lower-frame luma 204, 202, 205"
+      "detail": "lower-frame luma 206, 186, 185"
     },
     {
       "name": "run starts via START button",
@@ -233,7 +353,7 @@
     {
       "name": "skier accelerates down the fall line",
       "pass": true,
-      "detail": "speed 4.5->14.4 m/s, descended 13.6 m"
+      "detail": "speed 4.5->14.5 m/s, descended 13.6 m"
     },
     {
       "name": "btn-left press sets active state",
@@ -243,7 +363,7 @@
     {
       "name": "BUTTON 左转 steers left",
       "pass": true,
-      "detail": "heading 0.00->-0.95, x 9.5->-4.8"
+      "detail": "heading 0.00->-0.95, x 9.5->-4.9"
     },
     {
       "name": "BUTTON 右转 steers right",
@@ -253,17 +373,17 @@
     {
       "name": "carving across the fall line costs speed (real ski behaviour)",
       "pass": true,
-      "detail": "straight 17.0 m/s vs carving 10.6 m/s at heading -0.95 rad"
+      "detail": "straight 17.5 m/s vs carving 6.6 m/s at heading -0.95 rad"
     },
     {
       "name": "BUTTON 犁式刹车 slows on a black run",
       "pass": true,
-      "detail": "10.1 -> 0.0 m/s"
+      "detail": "8.1 -> 0.2 m/s"
     },
     {
       "name": "BUTTON 收腿加速 gains speed",
       "pass": true,
-      "detail": "1.0 -> 3.2 m/s"
+      "detail": "6.6 -> 12.0 m/s"
     },
     {
       "name": "BUTTON 起跳 leaves the ground",
@@ -278,12 +398,12 @@
     {
       "name": "gate lookup works",
       "pass": true,
-      "detail": "{\"x\": -16.375653902160774, \"z\": -322.77039542607963, \"half\": 3.6}"
+      "detail": "{\"x\": -10.80458414555168, \"z\": -321.06084854970686, \"half\": 3.6}"
     },
     {
       "name": "passing between the poles scores a gate",
       "pass": true,
-      "detail": "hit 3 -> 4, score 1818, combo 1.5"
+      "detail": "hit 3 -> 4, score 1597, combo 1"
     },
     {
       "name": "crossing the finish shows the results card",
@@ -303,7 +423,7 @@
     {
       "name": "再滑一次 restarts a fresh run",
       "pass": true,
-      "detail": "mode=run t=0.0"
+      "detail": "mode=run t=0.1"
     },
     {
       "name": "pause button reachable and works",
@@ -337,5 +457,5 @@
     }
   ],
   "ok": true,
-  "summary": "67/67 passed"
+  "summary": "91/91 passed"
 }

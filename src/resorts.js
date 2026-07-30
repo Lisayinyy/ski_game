@@ -32,6 +32,8 @@ export const RESORTS = [
     terrain: {
       pitch: 0.20, pisteHalf: 26, wallSteep: 0.9, rollAmp: 2.0,
       mogul: 0.10, rough: 0.5, curve: [0.0060, 22, 0.017, 7], width: 130,
+      // Deer Valley is famous for corduroy grooming — keep it (almost) mogul-free.
+      mogulField: { bands: [], amp: 0.0, size: 1.0, speedTax: 0.0 },
     },
     physics: { drag: 0.0052, carve: 1.55, maxSpeed: 27, grip: 1.05, deepDrag: 2.4, brake: 0.85 },
     palette: {
@@ -63,6 +65,8 @@ export const RESORTS = [
     terrain: {
       pitch: 0.245, pisteHalf: 23, wallSteep: 1.1, rollAmp: 3.2,
       mogul: 0.22, rough: 0.8, curve: [0.0072, 30, 0.021, 10], width: 140,
+      // one modest mogul stretch on the lower Big Burn — a blue-run taste, not a wall.
+      mogulField: { bands: [[0.46, 0.66]], amp: 0.75, size: 1.05, speedTax: 0.12 },
     },
     physics: { drag: 0.0044, carve: 1.5, maxSpeed: 31, grip: 1.0, deepDrag: 3.0, brake: 0.8 },
     palette: {
@@ -98,6 +102,8 @@ export const RESORTS = [
     terrain: {
       pitch: 0.235, pisteHalf: 21, wallSteep: 0.8, rollAmp: 2.6,
       mogul: 0.30, rough: 1.1, curve: [0.0085, 26, 0.024, 9], width: 130,
+      // powder day: softer, rounder rollers rather than hard bumps — one mid stretch.
+      mogulField: { bands: [[0.40, 0.62]], amp: 0.9, size: 1.25, speedTax: 0.10 },
     },
     physics: { drag: 0.0060, carve: 1.32, maxSpeed: 26, grip: 0.86, deepDrag: 1.7, brake: 0.95 },
     palette: {
@@ -129,6 +135,8 @@ export const RESORTS = [
     terrain: {
       pitch: 0.315, pisteHalf: 19, wallSteep: 1.5, rollAmp: 4.6,
       mogul: 0.40, rough: 1.4, curve: [0.0090, 27, 0.026, 11], width: 140,
+      // KT-22 is bump country: two big mogul fields, tight and punishing.
+      mogulField: { bands: [[0.22, 0.44], [0.58, 0.82]], amp: 1.5, size: 0.92, speedTax: 0.22 },
     },
     physics: { drag: 0.0040, carve: 1.62, maxSpeed: 35, grip: 1.08, deepDrag: 3.4, brake: 0.78 },
     palette: {
@@ -160,6 +168,8 @@ export const RESORTS = [
     terrain: {
       pitch: 0.335, pisteHalf: 24, wallSteep: 1.2, rollAmp: 5.2,
       mogul: 0.26, rough: 1.2, curve: [0.0055, 34, 0.019, 12], width: 150,
+      // Liberty Bowl: wide, big-amplitude bumps below the ridge — two broad fields.
+      mogulField: { bands: [[0.30, 0.52], [0.64, 0.86]], amp: 1.35, size: 1.15, speedTax: 0.20 },
     },
     physics: { drag: 0.0036, carve: 1.48, maxSpeed: 38, grip: 1.0, deepDrag: 3.0, brake: 0.75 },
     palette: {
@@ -191,6 +201,8 @@ export const RESORTS = [
     terrain: {
       pitch: 0.365, pisteHalf: 20, wallSteep: 1.7, rollAmp: 5.8,
       mogul: 0.16, rough: 1.5, curve: [0.0095, 29, 0.028, 12], width: 150,
+      // Glacier: hard, tight, icy bumps — two demanding fields, smaller & sharper.
+      mogulField: { bands: [[0.24, 0.46], [0.60, 0.84]], amp: 1.2, size: 0.85, speedTax: 0.24 },
     },
     physics: { drag: 0.0033, carve: 1.70, maxSpeed: 41, grip: 1.18, deepDrag: 3.8, brake: 0.70 },
     palette: {

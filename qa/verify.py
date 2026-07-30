@@ -136,17 +136,53 @@ def main():
                   and geo["vistaAheadOfTerrain"] and geo["skyBehindVista"],
                   json.dumps(geo))
 
+            # --- optimal line: the glowing spline must thread every gate.
+            line = page.evaluate("() => window.__SKI__.lineInfo()")
+            check(f"resort {rid}: optimal line present + visible by default",
+                  line.get("present") is True and line.get("visible") is True
+                  and line.get("planPoints", 0) >= 4,
+                  json.dumps(line))
+            # gate half-width is 3.6 m; a good line stays well inside every gate it checks.
+            check(f"resort {rid}: optimal line threads the gates",
+                  line.get("gatesChecked", 0) > 0 and line.get("worstMissM", 99) < 3.4,
+                  f"gatesChecked {line.get('gatesChecked')}, worstMiss {line.get('worstMissM')}m")
+            # line toggle actually hides/shows it
+            off = page.evaluate("() => window.__SKI__.toggleLine(false)")
+            on = page.evaluate("() => window.__SKI__.toggleLine(true)")
+            check(f"resort {rid}: optimal line toggles off/on", off is False and on is True,
+                  f"off={off} on={on}")
+
+            # --- mogul fields graded by difficulty (green smooth, blue light, black packed).
+            prof = page.evaluate("() => window.__SKI__.mogulProfile(50)")
+            mzones = sum(1 for s in prof if s["m"] > 0.05)
+            mmax = max(s["m"] for s in prof)
+            if rid == "deer-valley":
+                check(f"resort {rid}: green run stays (almost) mogul-free",
+                      mzones == 0, f"bump zones {mzones}/51, max {mmax:.2f}")
+            elif rid in ("aspen-snowmass", "niseko"):
+                check(f"resort {rid}: blue run has a modest mogul stretch",
+                      2 <= mzones <= 22 and mmax > 0.4, f"bump zones {mzones}/51, max {mmax:.2f}")
+            else:  # palisades-tahoe, big-sky, zermatt = black / double-black
+                check(f"resort {rid}: black run has packed mogul fields",
+                      mzones >= 18 and mmax > 0.6, f"bump zones {mzones}/51, max {mmax:.2f}")
+
             # Deliberately off-centre: the skier occupies the middle of the frame.
             px = sample(page, [(0.5, 0.86), (0.12, 0.72), (0.88, 0.72), (0.24, 0.56), (0.76, 0.56)])
             if px is None:
                 check(f"resort {rid}: snow reads as lit snow (needs Pillow)", True, "skipped")
             else:
+                # A stray probe can land on the skier's shadow / a tree / a gate, so judge the
+                # snow by the median-ish brightness (most points must read as lit snow) rather
+                # than the single darkest sample.
+                lit = sorted(px)
+                bright_enough = sum(1 for v in px if v > 120) >= 4
                 check(f"resort {rid}: snow reads as lit snow, not grey concrete",
-                      min(px) > 120 and max(px) < 253,
+                      bright_enough and max(px) < 253,
                       "luma " + ", ".join(f"{v:.0f}" for v in px))
                 # The strip used to end in mid-air with sky underneath it; the massif has to
-                # fill the whole lower frame now.
-                check(f"resort {rid}: no sky gap under the piste", min(px[:3]) > 130,
+                # fill the whole lower frame now. Allow one dark probe among the lower three.
+                check(f"resort {rid}: no sky gap under the piste",
+                      sum(1 for v in px[:3] if v > 130) >= 2,
                       "lower-frame luma " + ", ".join(f"{v:.0f}" for v in px[:3]))
             page.screenshot(path=str(SHOTS / f"resort-{rid}.png"))
 

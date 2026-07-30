@@ -28,6 +28,7 @@ export class Controls {
     this.onPause = null;
     this.onRestart = null;
     this.onJump = null;
+    this.onToggleLine = null;
 
     addEventListener('keydown', (e) => this.onKey(e, true));
     addEventListener('keyup', (e) => this.onKey(e, false));
@@ -43,6 +44,7 @@ export class Controls {
     }
     if (down && e.code === 'KeyP') { this.onPause?.(); return; }
     if (down && e.code === 'KeyR') { this.onRestart?.(); return; }
+    if (down && e.code === 'KeyL') { this.onToggleLine?.(); return; }
     const name = KEYMAP[e.code];
     if (!name) return;
     e.preventDefault();

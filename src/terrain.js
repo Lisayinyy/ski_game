@@ -47,6 +47,10 @@ export class Terrain {
     this.resort = resort;
     this.t = resort.terrain;
     this.pal = resort.palette;
+    this.runLength = resort.run.lengthM;
+    // Mogul fields: bands are expressed as run-progress fractions [0..1] so a resort's
+    // bump zones stay put regardless of course length. Defaults keep old resorts smooth.
+    this.mogulField = this.t.mogulField || { bands: [], amp: 0, size: 1, speedTax: 0 };
     this.group = new THREE.Group();
     this.group.name = 'terrain';
     scene.add(this.group);
@@ -174,6 +178,56 @@ export class Terrain {
   }
 
   /**
+   * How strongly the current point down the course sits inside a mogul band.
+   * Bands are progress fractions [0..1]; the mask ramps up/down over `EDGE` metres so a
+   * field grows into bumps and eases back to smooth corduroy instead of popping on.
+   * Returns 0 outside every band, up to 1 in the heart of one.
+   */
+  mogulMask(z) {
+    const bands = this.mogulField.bands;
+    if (!bands || !bands.length) return 0;
+    const p = clamp(-z / this.runLength, 0, 1); // run progress at this z
+    const EDGE = 0.05;
+    let m = 0;
+    for (const [a, b] of bands) {
+      const inn = smoothstep(a - EDGE, a + EDGE, p) * (1 - smoothstep(b - EDGE, b + EDGE, p));
+      if (inn > m) m = inn;
+    }
+    return m;
+  }
+
+  /**
+   * Bump height at (x,z). Real mogul fields are rounded mounds packed in an offset grid,
+   * not a single sine — so two staggered lattices (a coarse primary + a finer secondary
+   * rotated 90°) are summed and rectified toward rounded crests. Only rendered where the
+   * mask is on, and faded out toward the piste edge so the bumps live on the run itself.
+   */
+  mogulHeight(x, z) {
+    const f = this.mogulField;
+    const mask = this.mogulMask(z);
+    if (mask <= 0 || f.amp <= 0) return 0;
+    const inPiste = 1 - smoothstep(this.t.pisteHalf * 0.75, this.t.pisteHalf * 1.15, Math.abs(x - this.centerX(z)));
+    if (inPiste <= 0) return 0;
+    const s = 0.62 / Math.max(0.4, f.size); // spatial frequency; bigger size => wider bumps
+    // primary lattice
+    let h = Math.cos(x * s) * Math.cos(z * s * 0.92);
+    // secondary lattice, offset + rotated, gives the packed offset-grid look
+    h += 0.55 * Math.cos((x + z) * s * 0.9 + 1.3) * Math.cos((x - z) * s * 0.8);
+    // rectify toward rounded mounds (mostly positive humps, shallow troughs)
+    h = 0.5 + 0.5 * Math.sin(h * 1.15);
+    h = Math.pow(h, 0.8);
+    return (h - 0.35) * f.amp * mask * inPiste;
+  }
+
+  /** 0..1 bump intensity for physics (speed tax + camera shake). */
+  mogulIntensity(x, z) {
+    const f = this.mogulField;
+    if (f.amp <= 0) return 0;
+    const inPiste = 1 - smoothstep(this.t.pisteHalf * 0.75, this.t.pisteHalf * 1.15, Math.abs(x - this.centerX(z)));
+    return this.mogulMask(z) * inPiste;
+  }
+
+  /**
    * Height the ground gains `over` metres outside the groomed piste.
    *
    * A pure quadratic (what this used to be) is fine for the first few metres but runs
@@ -204,7 +258,10 @@ export class Terrain {
     y += this.bankRise(Math.max(0, adx - t.pisteHalf));
 
     const inPiste = 1 - smoothstep(t.pisteHalf * 0.7, t.pisteHalf, adx);
-    y += Math.sin(dx * 0.62) * Math.sin(z * 0.58) * t.mogul * inPiste;
+    // faint always-on chatter so the piste is never glassy...
+    y += Math.sin(dx * 0.62) * Math.sin(z * 0.58) * t.mogul * 0.35 * inPiste;
+    // ...and the real mogul fields where the resort declares them.
+    y += this.mogulHeight(x, z);
     // long rollers — wide enough to catch the light and give the eye some relief
     y += Math.sin(z * 0.031) * Math.cos(dx * 0.055) * 0.55;
     y += Math.sin(z * 0.205 + dx * 0.17) * 0.22 * t.rough;

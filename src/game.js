@@ -75,6 +75,7 @@ export class Game {
     c.bindTap(el('btn-resume'), () => this.pause(false));
     c.bindTap(el('btn-quit'), () => { this.mode = 'title'; this.ui.fillResorts(); this.ui.setScreen('title'); });
     c.bindTap(el('btn-pause'), () => this.pause(this.mode === 'run'));
+    c.bindTap(el('btn-line'), () => this.toggleLine());
     c.bindTap(el('btn-mute'), () => {
       const m = !this.audio.muted;
       this.audio.setMuted(m);
@@ -90,6 +91,15 @@ export class Game {
 
     c.onPause = () => { if (this.mode === 'run' || this.mode === 'paused') this.pause(this.mode === 'run'); };
     c.onRestart = () => { if (this.mode === 'run' || this.mode === 'results') this.startRun(); };
+    c.onToggleLine = () => this.toggleLine();
+  }
+
+  /** Show/hide the optimal-line ribbon and keep the toggle button in sync. */
+  toggleLine(on) {
+    const vis = this.world ? this.world.setLineVisible(on) : true;
+    const btn = document.getElementById('btn-line');
+    if (btn) btn.classList.toggle('is-active', vis);
+    return vis;
   }
 
   /* -------------------------------------------------------------- loading */
@@ -551,6 +561,52 @@ export class Game {
           x: p.x, center: self.terrain.centerX(p.z), offPiste: p.offPiste,
           speed: p.speed, mode: self.mode,
         };
+      },
+      /** Toggle / set the optimal-line ribbon; returns resulting visibility. */
+      toggleLine: (on) => self.toggleLine(on),
+      /**
+       * Verify the ideal line actually threads the gates: for every gate, find the closest
+       * point on the precomputed spline and report the worst lateral miss. A good line keeps
+       * every gate within its half-width.
+       */
+      lineInfo: () => {
+        const w = self.world;
+        if (!w || !w.idealCurve) return { present: false };
+        const pts = [];
+        const N = 600;
+        for (let i = 0; i <= N; i++) pts.push(w.idealCurve.getPoint(i / N));
+        let worst = 0; let count = 0;
+        for (const g of w.gates) {
+          let best = Infinity;
+          for (const q of pts) {
+            if (Math.abs(q.z - g.z) > 6) continue;
+            const d = Math.abs(q.x - g.x);
+            if (d < best) best = d;
+          }
+          if (best === Infinity) continue;
+          count++;
+          if (best > worst) worst = best;
+        }
+        return {
+          present: true, visible: !!w.lineVisible,
+          gatesChecked: count, worstMissM: +worst.toFixed(2),
+          planPoints: w.idealLinePts ? w.idealLinePts.length : 0,
+        };
+      },
+      /** Sample mogul intensity + surface height along the run centre (bump-field probe). */
+      mogulProfile: (samples = 40) => {
+        const t = self.terrain; const L = self.resort.run.lengthM;
+        const out = [];
+        for (let i = 0; i <= samples; i++) {
+          const z = -(i / samples) * L;
+          const x = t.centerX(z);
+          out.push({
+            p: +(i / samples).toFixed(3),
+            m: +(t.mogulIntensity ? t.mogulIntensity(x, z) : 0).toFixed(3),
+            y: +t.elevation(x, z).toFixed(2),
+          });
+        }
+        return out;
       },
     };
     window.__SKI_READY__ = true;

@@ -104,12 +104,21 @@ export class SkiPhysics {
     const cosT = inv;
 
     if (!this.airborne) {
+      // ---- mogul field: bumps scrub speed unless you absorb them (slower = smoother).
+      // The vertical chatter is already there because `y` tracks the bumpy `elevation()`;
+      // this adds the felt drag so a fast straight-line through moguls actually costs you.
+      const bump = t.mogulIntensity ? t.mogulIntensity(this.x, this.z) : 0;
+      const mogulTax = bump * (t.mogulField?.speedTax || 0);
+
       // ---- longitudinal dynamics
       let mu = 0.042 / p.grip + off * 0.085;
       mu += Math.abs(this.edge) * 0.032;                       // edge scrub / skidding
+      mu += mogulTax * 0.11;                                    // pounding through bumps
       const drag = p.drag * (tuck ? 0.56 : 1) * (1 + off * 0.45);
       let acc = G * sinT * Math.cos(this.heading) - mu * G * cosT - drag * this.speed * this.speed;
       acc -= (off * this.speed) / Math.max(1, p.deepDrag) * 0.5;
+      // faster you charge a bump field, the more it slows you (unless you brake/absorb)
+      acc -= mogulTax * this.speed * 0.06 * (1 - 0.5 * brake);
       // A wedge is not just extra friction — it is an authoritative brake. It has to be able
       // to hold speed on a black run, otherwise button-only play has no speed control.
       if (brake) acc -= p.brake * 9.2 * clamp(this.speed / 3, 0, 1);
@@ -204,6 +213,7 @@ export class SkiPhysics {
     const latGrad = (t.elevation(this.x + 1.2, this.z) - t.elevation(this.x - 1.2, this.z)) / 2.4;
     this.terrainRoll = Math.atan(latGrad);
     this.offPiste = off;
+    this.mogul = t.mogulIntensity ? t.mogulIntensity(this.x, this.z) : 0;
     return this.events;
   }
 }

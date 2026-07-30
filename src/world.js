@@ -34,6 +34,35 @@ function place(geo, x, y, z, scale = 1, rotY = 0) {
   return geo.clone().applyMatrix4(m);
 }
 
+/**
+ * Deterministic 0..1 hash — lets gate placement be reproduced for the ideal-line spline
+ * without replaying the per-chunk scenery RNG stream (trees/hazards stay untouched).
+ */
+function hash01(a, b = 0) {
+  const s = Math.sin(a * 127.1 + b * 311.7) * 43758.5453;
+  return s - Math.floor(s);
+}
+
+/**
+ * The three slalom gates for one chunk, as pure data (no meshes, no RNG-stream coupling).
+ * Both the mesh builder and the ideal-line planner call this, so the glowing line always
+ * threads exactly through the gates the player sees. Returns [] for chunks with no gates.
+ */
+function planChunkGates(resort, terrain, index, finishZ) {
+  const zStart = -index * CHUNK_LEN;
+  const out = [];
+  let running = index * 3;
+  for (let k = 0; k < 3; k++) {
+    const z = zStart - 18 - k * 30 - hash01(resort.seed + index, k * 7 + 1) * 8;
+    if (z > -40 || z < finishZ + 24) { running++; continue; }
+    const cxg = terrain.centerX(z);
+    const offset = (hash01(resort.seed + index * 5.0, k * 3 + 2) - 0.5) * terrain.pisteHalf * 0.95;
+    out.push({ x: cxg + offset, z, blue: running % 2 === 0 });
+    running++;
+  }
+  return out;
+}
+
 /** Render order of the furthest vista layer; has to sit between the sky and the terrain. */
 const VISTA_ORDER = -18;
 
@@ -238,6 +267,7 @@ export class World {
     this.buildVista();
     this.buildLights();
     this.buildFinishBanner();
+    this.buildIdealLine();
   }
 
   /* ------------------------------------------------------------------ sky */
@@ -511,6 +541,96 @@ export class World {
     this.finishBanner = g;
   }
 
+  /* --------------------------------------------------------- ideal line */
+
+  /**
+   * The "optimal line": a smooth spline that threads every slalom gate from the start
+   * ramp to the finish, drawn as a glowing ribbon that hugs the snow. It is precomputed
+   * from planChunkGates() (deterministic, same coordinates the gate meshes use), so it is
+   * complete the moment the run loads and never depends on chunk streaming. Players can
+   * hide it with the on-screen 走线 toggle / the L key.
+   */
+  buildIdealLine() {
+    const t = this.terrain;
+    const chunkCount = Math.ceil(this.resort.run.lengthM / CHUNK_LEN) + 1;
+
+    // gather gate centres in downhill order, bracketed by a start and finish anchor
+    const pts = [{ x: t.centerX(-6), z: -6 }];
+    for (let i = 0; i <= chunkCount; i++) {
+      for (const gp of planChunkGates(this.resort, t, i, this.finishZ)) pts.push({ x: gp.x, z: gp.z });
+    }
+    pts.push({ x: t.centerX(this.finishZ + 2), z: this.finishZ + 2 });
+    pts.sort((a, b) => b.z - a.z); // z decreases downhill
+
+    this.idealLinePts = pts;
+    if (pts.length < 2) { this.idealLine = null; return; }
+
+    // smooth spline through the gate centres, sampled densely and dropped onto the snow
+    const ctrl = pts.map((p) => new THREE.Vector3(p.x, 0, p.z));
+    const curve = new THREE.CatmullRomCurve3(ctrl, false, 'catmullrom', 0.5);
+    const samples = Math.max(48, Math.min(900, pts.length * 10));
+    const path = [];
+    for (let i = 0; i <= samples; i++) {
+      const v = curve.getPoint(i / samples);
+      v.y = t.elevation(v.x, v.z) + 0.45; // hover just above the surface
+      path.push(v);
+    }
+    this.idealCurve = new THREE.CatmullRomCurve3(path, false, 'catmullrom', 0.5);
+
+    const geo = new THREE.TubeGeometry(this.idealCurve, samples, 1.35, 8, false);
+    const uniforms = {
+      uTime: { value: 0 },
+      uColor: { value: new THREE.Color(0x18c8ff) },
+      uEdge: { value: new THREE.Color(0x0a3a6b) },
+    };
+    const mat = new THREE.ShaderMaterial({
+      transparent: true,
+      depthWrite: false,
+      // Normal alpha blend, not additive: on near-white snow additive barely shows. We want
+      // a saturated painted guide line that clearly reads against the piste.
+      blending: THREE.NormalBlending,
+      side: THREE.DoubleSide,
+      uniforms,
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }`,
+      fragmentShader: `
+        uniform float uTime;
+        uniform vec3 uColor;
+        uniform vec3 uEdge;
+        varying vec2 vUv;
+        void main() {
+          // fade the tube's cross-section so the band has a soft dark rim + bright core
+          float core = smoothstep(0.0, 0.32, vUv.y) * smoothstep(1.0, 0.68, vUv.y);
+          float rim  = smoothstep(0.0, 0.12, vUv.y) * smoothstep(1.0, 0.88, vUv.y);
+          // chevrons flowing downhill along the line
+          float flow = sin((vUv.x * 55.0) - uTime * 4.0);
+          float chev = smoothstep(0.15, 0.9, flow);
+          vec3 col = mix(uEdge, uColor, core);
+          col = mix(col, vec3(0.85, 0.98, 1.0), chev * core * 0.7);
+          float a = rim * (0.55 + 0.4 * chev);
+          gl_FragColor = vec4(col, a);
+        }`,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.frustumCulled = false;
+    mesh.renderOrder = 2; // over the snow, under the HUD
+    this.staticGroup.add(mesh);
+    this.idealLine = mesh;
+    this.idealLineMat = mat;
+    this.lineVisible = true;
+  }
+
+  /** Toggle / set the optimal-line ribbon. Returns the resulting visibility. */
+  setLineVisible(on) {
+    this.lineVisible = on === undefined ? !this.lineVisible : !!on;
+    if (this.idealLine) this.idealLine.visible = this.lineVisible;
+    return this.lineVisible;
+  }
+
   /* ------------------------------------------------------------ populate */
 
   populate(index) {
@@ -616,13 +736,13 @@ export class World {
     if (r.props.hut && index > 0 && index % 5 === 0) group.add(this.buildHut(zStart - 60));
     if (r.props.village && index > 0 && index % 7 === 0) group.add(this.buildVillage(zStart - 55));
 
-    // --- slalom gates: the core scoring objective
-    for (let k = 0; k < 3; k++) {
-      const z = zStart - 18 - k * 30 - rng() * 8;
-      if (z > -40 || z < this.finishZ + 24) continue;
-      const cxg = t.centerX(z);
-      const offset = (rng() - 0.5) * t.pisteHalf * 0.95;
-      const gate = this.buildGate(cxg + offset, z, this.gates.length % 2 === 0);
+    // --- slalom gates: the core scoring objective.
+    // Coordinates come from planChunkGates() (deterministic) so the ideal-line spline can
+    // reproduce them without replaying this RNG stream. Burn a fixed 2 rng() per gate slot
+    // (matching the common all-gates-kept path) so the downstream kicker RNG stays put.
+    for (let k = 0; k < 3; k++) { rng(); rng(); }
+    for (const gp of planChunkGates(r, t, index, this.finishZ)) {
+      const gate = this.buildGate(gp.x, gp.z, gp.blue);
       group.add(gate.group);
       this.gates.push(gate);
     }
@@ -832,6 +952,7 @@ export class World {
     this.sun.position.set(riderPos.x + d.x, riderPos.y + Math.max(90, d.y + 110), riderPos.z + d.z);
 
     for (const a of this.animated) a.fn(a.obj, time);
+    if (this.idealLineMat) this.idealLineMat.uniforms.uTime.value = time;
   }
 
   hazardsAround(z) {
