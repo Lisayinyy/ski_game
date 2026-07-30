@@ -187,6 +187,15 @@ def main():
                 check(f"resort {rid}: no sky gap under the piste",
                       sum(1 for v in px[:3] if v > 130) >= 2,
                       "lower-frame luma " + ", ".join(f"{v:.0f}" for v in px[:3]))
+
+            # trail map is sampled from the real terrain; it must have a sensible profile,
+            # the correct number of gates, and both canvases present in the DOM.
+            tm = page.evaluate("() => window.__SKI__.trailMap()")
+            check(f"resort {rid}: trail map sampled from real terrain",
+                  tm["present"] and tm["points"] >= 100 and tm["dropM"] > 50
+                  and tm["gates"] >= 1 and tm["briefCanvas"] and tm["hudCanvas"],
+                  f"pts {tm['points']}, gates {tm['gates']}, zones {tm['zones']}, "
+                  f"drop {tm['dropM']}m, grade avg {tm['avgGrade']}% max {tm['maxGrade']}%")
             page.screenshot(path=str(SHOTS / f"resort-{rid}.png"))
 
         # ------------------------------------------------------------ start run

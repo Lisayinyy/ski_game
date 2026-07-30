@@ -1,5 +1,6 @@
 import { RESORTS, DIFFICULTY } from './resorts.js';
 import { formatTime, clamp } from './util.js';
+import { drawTrailMap, drawMiniMap } from './trailmap.js';
 
 const BEST_KEY = (id) => `alpine-rush.best.${id}`;
 
@@ -84,9 +85,12 @@ export class UI {
     this.onPick?.(id);
   }
 
-  showBrief(resort) {
+  showBrief(resort, runMap) {
     const d = DIFFICULTY[resort.difficulty];
     const best = loadBest(resort.id);
+    const zoneText = runMap && runMap.zones.length
+      ? runMap.zones.map((z) => `${Math.round(z.from)}–${Math.round(z.to)} m`).join(' · ')
+      : '本条道无成片雪包';
     this.el('brief-body').innerHTML = `
       <div class="brief-head">
         <span class="rc-diff" style="--diff:${d.color}">${d.mark} ${d.label}</span>
@@ -104,6 +108,19 @@ export class UI {
         <span><small>参考顶部海拔</small><b>≈ ${resort.facts.summitRefM} m</b></span>
         <span><small>备注</small><b>${resort.facts.note}</b></span>
       </div>
+      <div class="brief-map">
+        <h3>雪道地形图 <small>由本条道的真实地形实时生成</small></h3>
+        <div class="map-wrap"><canvas id="brief-map-canvas" class="map-canvas"></canvas></div>
+        <ul class="map-legend">
+          <li><i class="sw sw-green"></i>缓 &lt;25%</li>
+          <li><i class="sw sw-blue"></i>中 25–34%</li>
+          <li><i class="sw sw-black"></i>陡 34–46%</li>
+          <li><i class="sw sw-double"></i>极陡 &gt;46%</li>
+          <li><i class="sw sw-mogul"></i>雪包区</li>
+          <li><i class="sw sw-gate-r"></i><i class="sw sw-gate-b"></i>旗门</li>
+        </ul>
+        <p class="map-note">雪包区：${zoneText}</p>
+      </div>
       <div class="brief-controls">
         <h3>操作指南 <small>屏幕按钮 / 键盘 都行</small></h3>
         <ul class="key-list">
@@ -120,6 +137,11 @@ export class UI {
       <p class="brief-note">参考数据为公开资料的近似值，仅用于氛围呈现，非官方数据。场景为原创低多边形建模，未使用任何 Ikon Pass 或雪场的图片与标识。</p>
       ${best ? `<p class="brief-best">个人最佳：<b>${best.score.toLocaleString()}</b> 分 · ${formatTime(best.time)} · ${best.medal}</p>` : ''}
     `;
+    // The canvas only exists once the markup above is in the DOM.
+    if (runMap) {
+      const cv = this.el('brief-map-canvas');
+      if (cv) { try { drawTrailMap(cv, runMap); } catch { /* map is decorative */ } }
+    }
     this.setScreen('brief');
   }
 
@@ -149,6 +171,32 @@ export class UI {
     air.textContent = s.airborne ? `AIR ${s.airTime.toFixed(1)}s` : 'AIR';
     this.el('hud-terrain').textContent = s.offPiste > 0.45 ? '深雪区' : '压雪道';
     this.el('hud-terrain').classList.toggle('is-powder', s.offPiste > 0.45);
+    this.drawMini(s);
+  }
+
+  /** Hand the sampled run to the UI so both the briefing map and the minimap can use it. */
+  setRunMap(map) {
+    this.runMap = map;
+    this._miniAt = 0;
+  }
+
+  /**
+   * The minimap only needs to *look* live, so it is redrawn ~16x a second instead of on
+   * every WebGL frame — the ribbon is a few hundred path points and repainting it at 60 fps
+   * next to the 3D scene is pure waste.
+   */
+  drawMini(s, force = false) {
+    const cv = this.el('hud-map-canvas');
+    if (!cv || !this.runMap) return;
+    const now = performance.now();
+    if (!force && now - (this._miniAt || 0) < 62) return;
+    this._miniAt = now;
+    try {
+      drawMiniMap(cv, this.runMap, {
+        d: clamp(s.progress, 0, 1) * this.runMap.lengthM,
+        x: s.x ?? 0,
+      });
+    } catch { /* minimap is decorative */ }
   }
 
   toast(text, kind = '') {

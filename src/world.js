@@ -556,12 +556,15 @@ export class World {
     const t = this.terrain;
     const chunkCount = Math.ceil(this.resort.run.lengthM / CHUNK_LEN) + 1;
 
-    // gather gate centres in downhill order, bracketed by a start and finish anchor
-    const pts = [{ x: t.centerX(-6), z: -6 }];
+    // gather gate centres in downhill order, bracketed by a start and finish anchor.
+    // `gate:false` marks the two anchors so the trail map can tell them from real gates.
+    const pts = [{ x: t.centerX(-6), z: -6, gate: false }];
     for (let i = 0; i <= chunkCount; i++) {
-      for (const gp of planChunkGates(this.resort, t, i, this.finishZ)) pts.push({ x: gp.x, z: gp.z });
+      for (const gp of planChunkGates(this.resort, t, i, this.finishZ)) {
+        pts.push({ x: gp.x, z: gp.z, blue: gp.blue, gate: true });
+      }
     }
-    pts.push({ x: t.centerX(this.finishZ + 2), z: this.finishZ + 2 });
+    pts.push({ x: t.centerX(this.finishZ + 2), z: this.finishZ + 2, gate: false });
     pts.sort((a, b) => b.z - a.z); // z decreases downhill
 
     this.idealLinePts = pts;

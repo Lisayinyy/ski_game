@@ -7,6 +7,7 @@ import { Snowfall, Spray, Trails, createComposer, tuneGrade } from './fx.js';
 import { Controls } from './controls.js';
 import { Audio } from './audio.js';
 import { UI, medalFor } from './ui.js';
+import { sampleRun } from './trailmap.js';
 import { resortById, RESORTS } from './resorts.js';
 import { clamp, damp, lerp } from './util.js';
 
@@ -65,7 +66,7 @@ export class Game {
 
     this.ui.onPick = (id) => {
       this.loadResort(id, { preview: true });
-      this.ui.showBrief(this.resort);
+      this.ui.showBrief(this.resort, this.runMap);
     };
 
     c.bindTap(el('btn-start'), () => this.startRun());
@@ -130,6 +131,11 @@ export class Game {
     this.terrain.update(this.physics.z);
     this.world.update(this.physics, this.camera, 0);
     this.physics.kickers = this.world.kickers;
+
+    // Sample the finished run once, so the briefing trail map and the in-run minimap both
+    // describe the terrain that was actually built rather than a hand-drawn approximation.
+    this.runMap = sampleRun(resort, this.terrain, this.world);
+    this.ui.setRunMap(this.runMap);
 
     this.resetRunState();
     this.placeSkier();
@@ -476,6 +482,7 @@ export class Game {
         airborne: p.airborne,
         airTime: p.airTime,
         offPiste: p.offPiste,
+        x: p.x,
       });
     }
   }
@@ -645,6 +652,22 @@ export class Game {
           });
         }
         return out;
+      },
+      /** Trail-map summary for QA: sample counts, gate/zone counts, drop + grade. */
+      trailMap: () => {
+        const m = self.runMap;
+        if (!m) return { present: false };
+        return {
+          present: true,
+          points: m.points.length,
+          gates: m.gates.length,
+          zones: m.zones.length,
+          dropM: +m.dropM.toFixed(1),
+          avgGrade: +m.avgGrade.toFixed(1),
+          maxGrade: +m.maxGrade.toFixed(1),
+          briefCanvas: !!document.getElementById('brief-map-canvas'),
+          hudCanvas: !!document.getElementById('hud-map-canvas'),
+        };
       },
     };
     window.__SKI_READY__ = true;

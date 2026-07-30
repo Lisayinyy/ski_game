@@ -337,6 +337,46 @@ b, strong { font-weight: 800; }
 }
 .error.is-on { display: block; }
 
+/* ============================================================ trail map */
+.brief-map {
+  margin-top: 14px; padding: 12px 14px 14px; border-radius: 12px;
+  background: rgba(12, 34, 66, 0.5); border: 1px solid var(--panel-line);
+}
+.brief-map h3 {
+  margin: 0 0 10px; font-size: 13px; letter-spacing: 0.06em;
+  display: flex; align-items: baseline; gap: 8px;
+}
+.brief-map h3 small { font-size: 10px; font-weight: 600; color: var(--ink-dim); letter-spacing: 0.08em; }
+.map-wrap {
+  border-radius: 10px; overflow: hidden; background: rgba(6, 22, 44, 0.55);
+  border: 1px solid var(--panel-line); padding: 6px;
+}
+.map-canvas { display: block; width: 100%; height: auto; }
+.map-legend {
+  list-style: none; margin: 10px 0 0; padding: 0;
+  display: flex; flex-wrap: wrap; gap: 6px 14px;
+  font-size: 11px; color: var(--ink-dim);
+}
+.map-legend li { display: flex; align-items: center; gap: 5px; }
+.map-legend .sw { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.sw-green { background: #3fa65a; }
+.sw-blue { background: #2f7fd0; }
+.sw-black { background: #2b3340; }
+.sw-double { background: #7a1f2b; }
+.sw-mogul { background: rgba(138, 98, 182, 0.75); }
+.sw-gate-r { width: 12px; height: 5px; border-radius: 1px; background: #d8434f; }
+.sw-gate-b { width: 12px; height: 5px; border-radius: 1px; background: #2f7fd0; }
+.map-note { margin: 8px 0 0; font-size: 11px; color: var(--ink-dim); letter-spacing: 0.04em; }
+
+/* ------------------------------------------------------- in-run minimap */
+.hud-map {
+  position: absolute; right: 16px; top: 96px;
+  padding: 4px; border-radius: 12px; pointer-events: none;
+  opacity: 0; transition: opacity 0.3s;
+}
+.hud.is-on .hud-map { opacity: 0.94; }
+.hud-map-canvas { display: block; width: 92px; height: 208px; }
+
 /* ============================================================== responsive */
 @media (max-width: 760px) {
   .hud { padding: max(12px, env(safe-area-inset-top)) 12px 14px; }
@@ -354,6 +394,7 @@ b, strong { font-weight: 800; }
   .title-head { text-align: center; }
   .lede { margin-inline: auto; }
   .brief-run, .brief-facts { grid-template-columns: 1fr; }
+  .hud-map { display: none; } /* the top HUD already shows progress; keep the small screen clean */
 }
 
 @media (max-width: 420px) {
