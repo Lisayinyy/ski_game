@@ -330,10 +330,17 @@ export class Game {
     const p = this.physics;
     if (p.airborne || p.speed < 2.0) return;
     const edge = Math.abs(p.edge);
-    // A carve on any surface throws snow; deep powder and braking throw far more.
-    const intensity = edge * 1.35 + p.offPiste * 1.8 + (input.brake ? 1.3 : 0);
-    if (intensity < 0.08) return;
-    const count = Math.min(22, Math.floor((0.6 + intensity) * p.speed * dt * 5.0));
+    // Only a genuinely HARD carve throws a plume. Small steering corrections must stay clear
+    // so they never block the view of the piste ahead. Below the dead-zone the carve
+    // contributes nothing; past it, it ramps up fast. Deep powder and braking still spray
+    // (those are expected and don't sit in front of the camera the same way).
+    const CARVE_DEADZONE = 0.62;
+    const hardCarve = edge > CARVE_DEADZONE
+      ? (edge - CARVE_DEADZONE) / (1 - CARVE_DEADZONE)   // 0..1 past the dead-zone
+      : 0;
+    const intensity = hardCarve * 1.9 + p.offPiste * 1.4 + (input.brake ? 1.1 : 0);
+    if (intensity < 0.12) return;
+    const count = Math.min(22, Math.floor((0.4 + intensity) * p.speed * dt * 5.0));
     if (count <= 0) return;
     const dirX = Math.sin(p.heading);
     const dirZ = -Math.cos(p.heading);
